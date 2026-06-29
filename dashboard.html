@@ -347,6 +347,79 @@ tr:hover .row-actions { opacity: 1; }
 .page-btn { padding: 5px 10px; border-radius: 6px; border: 1px solid var(--border); background: var(--surface); cursor: pointer; font-size: 11px; font-family: var(--font-mono); color: var(--text2); transition: all .2s; }
 .page-btn:hover { border-color: var(--border2); color: var(--text); }
 .page-btn.active { border-color: var(--blue-border); background: var(--blue-dim); color: var(--blue); }
+
+/* TABLE SCROLL WRAPPER */
+.table-scroll { overflow-x: auto; -webkit-overflow-scrolling: touch; border-radius: 8px; }
+
+/* HAMBURGER (mobile) */
+.mb-hamburger {
+  display: none; flex-direction: column; gap: 4px;
+  background: none; border: 1px solid var(--border); border-radius: 7px;
+  padding: 7px 8px; cursor: pointer; margin-right: 4px;
+}
+.mb-hamburger span { display: block; width: 16px; height: 1px; background: var(--text2); transition: all .3s; }
+.mb-hamburger.open span:nth-child(1) { transform: translateY(5px) rotate(45deg); }
+.mb-hamburger.open span:nth-child(2) { opacity: 0; }
+.mb-hamburger.open span:nth-child(3) { transform: translateY(-5px) rotate(-45deg); }
+
+.sidebar-overlay {
+  display: none; position: fixed; inset: 0; z-index: 49;
+  background: rgba(0,0,0,.6); backdrop-filter: blur(4px);
+}
+.sidebar-overlay.open { display: block; }
+
+/* ── MOBILE ── */
+@media (hover: none) {
+  body { cursor: auto; }
+  .cur, .cur-r { display: none; }
+}
+
+@media (max-width: 768px) {
+  body { display: block; }
+
+  .sidebar {
+    transform: translateX(-100%); transition: transform .3s cubic-bezier(.4,0,.2,1);
+    z-index: 50;
+  }
+  .sidebar.open { transform: translateX(0); }
+
+  .main { margin-left: 0; }
+
+  .topbar { padding: 0 16px; }
+  .tb-search { display: none; }
+  .mb-hamburger { display: flex; }
+  .tb-title { font-size: 16px; }
+
+  .content { padding: 16px; }
+
+  .stats-row { grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 20px; }
+  .sc-val { font-size: 22px; }
+
+  .filter-row { flex-wrap: nowrap; overflow-x: auto; padding-bottom: 4px; -webkit-overflow-scrolling: touch; }
+  .filter-row::-webkit-scrollbar { display: none; }
+  .filter-chip { white-space: nowrap; flex-shrink: 0; }
+
+  .table-scroll { border: 1px solid var(--border); border-radius: 8px; }
+  .brief-table { min-width: 680px; }
+
+  /* Row actions always visible on mobile (no hover) */
+  .row-actions { opacity: 1; }
+
+  .detail-panel { width: 100%; border-left: none; border-top: 1px solid var(--border); }
+
+  .charts-row { grid-template-columns: 1fr; }
+
+  .section-header { flex-wrap: wrap; gap: 8px; }
+  .view-toggle { display: none; }
+
+  .pagination { flex-direction: column; gap: 10px; align-items: flex-start; }
+}
+
+@media (max-width: 480px) {
+  .stats-row { grid-template-columns: 1fr 1fr; gap: 8px; }
+  .sc-label { font-size: 9px; }
+  .tb-btn span { display: none; }
+}
 </style>
 </head>
 <body>
@@ -354,8 +427,11 @@ tr:hover .row-actions { opacity: 1; }
 <div class="cur" id="cur"></div>
 <div class="cur-r" id="curR"></div>
 
+<!-- Sidebar overlay (mobile) -->
+<div class="sidebar-overlay" id="sidebarOverlay" onclick="closeSidebar()"></div>
+
 <!-- SIDEBAR -->
-<nav class="sidebar">
+<nav class="sidebar" id="sidebar">
   <div class="sb-logo">
     <div class="sb-logo-mark">⚡</div>
     <div class="sb-logo-text">EnergyMatch</div>
@@ -406,6 +482,9 @@ tr:hover .row-actions { opacity: 1; }
 
   <!-- TOPBAR -->
   <div class="topbar">
+    <button class="mb-hamburger" id="mbHamburger" onclick="toggleSidebar()" aria-label="Menu">
+      <span></span><span></span><span></span>
+    </button>
     <div class="tb-title">Vue d'ensemble</div>
     <div class="tb-right">
       <div class="tb-search">
@@ -413,7 +492,7 @@ tr:hover .row-actions { opacity: 1; }
         <input type="text" placeholder="Rechercher un brief…">
       </div>
       <div class="tb-notif">🔔<div class="notif-dot"></div></div>
-      <button class="tb-btn" onclick="location.href='brief-wizard.html'">+ Nouveau brief</button>
+      <button class="tb-btn" onclick="location.href='brief-wizard.html'"><span>+ Nouveau brief</span></button>
     </div>
   </div>
 
@@ -462,7 +541,7 @@ tr:hover .row-actions { opacity: 1; }
       <div class="filter-chip" onclick="filterStatus(this,'cloture_succes')">Clôturés</div>
     </div>
 
-    <div style="background:var(--surface);border:1px solid var(--border);border-radius:12px;overflow:hidden">
+    <div class="table-scroll" style="background:var(--surface);border:1px solid var(--border);border-radius:12px;overflow:hidden">
       <table class="brief-table" id="briefTable">
         <thead>
           <tr>
@@ -607,11 +686,32 @@ tr:hover .row-actions { opacity: 1; }
 </div>
 
 <script>
-// CURSOR
+// CURSOR (desktop only)
 const cur=document.getElementById('cur'),curR=document.getElementById('curR');
 let mx=0,my=0,rx=0,ry=0;
-document.addEventListener('mousemove',e=>{mx=e.clientX;my=e.clientY;cur.style.left=mx+'px';cur.style.top=my+'px';});
-(function a(){rx+=(mx-rx)*.1;ry+=(my-ry)*.1;curR.style.left=rx+'px';curR.style.top=ry+'px';requestAnimationFrame(a);})();
+if (!window.matchMedia('(hover: none)').matches) {
+  document.addEventListener('mousemove',e=>{mx=e.clientX;my=e.clientY;cur.style.left=mx+'px';cur.style.top=my+'px';});
+  (function a(){rx+=(mx-rx)*.1;ry+=(my-ry)*.1;curR.style.left=rx+'px';curR.style.top=ry+'px';requestAnimationFrame(a);})();
+}
+
+// MOBILE SIDEBAR
+const sidebar=document.getElementById('sidebar');
+const overlay=document.getElementById('sidebarOverlay');
+const mbBtn=document.getElementById('mbHamburger');
+function toggleSidebar(){
+  const open=sidebar.classList.toggle('open');
+  overlay.classList.toggle('open',open);
+  mbBtn.classList.toggle('open',open);
+  document.body.style.overflow=open?'hidden':'';
+}
+function closeSidebar(){
+  sidebar.classList.remove('open');
+  overlay.classList.remove('open');
+  mbBtn.classList.remove('open');
+  document.body.style.overflow='';
+}
+// Close sidebar on nav link click (mobile)
+document.querySelectorAll('.sb-link').forEach(l=>l.addEventListener('click',()=>{ if(window.innerWidth<=768) closeSidebar(); }));
 
 // DATA
 const briefs=[
