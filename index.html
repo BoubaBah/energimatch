@@ -567,7 +567,83 @@ footer {
 .sparkline path { stroke-dasharray: 200; stroke-dashoffset: 200; animation: drawSpark 1.4s .8s ease forwards; }
 @keyframes drawSpark { to { stroke-dashoffset: 0; } }
 
-/* ── TESTIMONIALS ── */
+/* ── BORDER BEAM (CSS Houdini @property) ── */
+@property --beam {
+  syntax: '<angle>';
+  initial-value: 0deg;
+  inherits: false;
+}
+@keyframes beamSpin { to { --beam: 360deg; } }
+
+/* CTA block — continuous amber beam on border */
+.cta-inner {
+  overflow: visible !important;
+}
+.cta-inner::after {
+  content: '';
+  position: absolute; inset: -1px; border-radius: 17px;
+  background: conic-gradient(
+    from var(--beam),
+    transparent 0%,
+    transparent 72%,
+    rgba(232,160,32,0.0) 78%,
+    rgba(232,160,32,0.7) 87%,
+    rgba(255,225,120,1)  90%,
+    rgba(232,160,32,0.7) 93%,
+    transparent 99%
+  );
+  animation: beamSpin 5s linear infinite;
+  z-index: -1;
+  pointer-events: none;
+}
+
+/* Expert cards — beam on hover */
+.expert-card {
+  --beam: 0deg;
+}
+.expert-card:hover::after {
+  content: '';
+  position: absolute; inset: -1px; border-radius: 13px;
+  background: conic-gradient(
+    from var(--beam),
+    transparent 0%, transparent 70%,
+    rgba(232,160,32,0.5) 85%, rgba(255,220,100,.9) 90%,
+    rgba(232,160,32,0.5) 95%, transparent 100%
+  );
+  animation: beamSpin 3s linear infinite;
+  z-index: -1; pointer-events: none;
+}
+
+/* Pricing featured card beam */
+.price-card.featured::after {
+  content: '';
+  position: absolute; inset: -1px; border-radius: 15px;
+  background: conic-gradient(
+    from var(--beam),
+    transparent 0%, transparent 65%,
+    rgba(232,160,32,0.4) 80%, rgba(255,220,100,.8) 87%,
+    rgba(232,160,32,0.4) 94%, transparent 100%
+  );
+  animation: beamSpin 6s linear infinite;
+  z-index: -1; pointer-events: none;
+}
+
+/* ── HERO TITLE WORD SPLIT ── */
+.word-wrap { overflow: hidden; display: inline-block; }
+.word-inner { display: inline-block; animation: wordUp .7s cubic-bezier(.16,1,.3,1) both; }
+@keyframes wordUp { from{transform:translateY(100%);opacity:0} to{transform:translateY(0);opacity:1} }
+
+/* ── MAGNETIC BUTTON ── */
+.btn-primary { transition: transform .3s cubic-bezier(.25,.46,.45,.94), box-shadow .25s; will-change: transform; }
+
+/* ── GLOW PULSE on primary CTA ── */
+@keyframes ctaGlow {
+  0%,100% { box-shadow: 0 0 24px rgba(232,160,32,0.25); }
+  50%      { box-shadow: 0 0 48px rgba(232,160,32,0.5), 0 0 80px rgba(232,160,32,0.15); }
+}
+.hero-actions .btn-primary { animation: ctaGlow 3s ease-in-out infinite; }
+
+/* ── TESTIMONIALS (removed, CSS kept clean) ── */
 .test-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 16px; margin-top: 56px; }
 .test-card {
   background: var(--card); border: 1px solid var(--card-bdr);
@@ -986,49 +1062,6 @@ footer {
   </div>
 </div>
 
-<!-- TESTIMONIALS -->
-<div class="section-wrap testimonials">
-  <div class="reveal" style="text-align:center">
-    <div class="section-eyebrow" style="justify-content:center">Témoignages</div>
-    <h2 class="section-title">Ils ont trouvé<br><em>leur expert.</em></h2>
-  </div>
-  <div class="test-grid">
-    <div class="test-card reveal">
-      <p class="test-quote">En 48h j'avais trois courtiers qualifiés. J'en ai retenu un, il nous a économisé 40 000 € sur le renouvellement de nos contrats gaz.</p>
-      <div class="test-author">
-        <div class="test-av">JR</div>
-        <div class="test-info">
-          <div class="test-name">Jean-Pierre Renard</div>
-          <div class="test-role">DAF · Renard Industrie</div>
-        </div>
-        <div class="test-stars">★ 5.0</div>
-      </div>
-    </div>
-    <div class="test-card reveal reveal-delay-1">
-      <p class="test-quote">Je cherchais un bureau d'études RE2020 pour un programme de 80 logements. Le matching était parfait — certifications vérifiées, dispo immédiate.</p>
-      <div class="test-author">
-        <div class="test-av">SC</div>
-        <div class="test-info">
-          <div class="test-name">Sophie Challier</div>
-          <div class="test-role">Directrice · SCI Challier</div>
-        </div>
-        <div class="test-stars">★ 4.9</div>
-      </div>
-    </div>
-    <div class="test-card reveal reveal-delay-2">
-      <p class="test-quote">Service impeccable. L'auditeur recommandé a identifié des économies qu'on n'avait pas vues depuis 3 ans. ROI en moins d'un trimestre.</p>
-      <div class="test-author">
-        <div class="test-av">TM</div>
-        <div class="test-info">
-          <div class="test-name">Thomas Mercier</div>
-          <div class="test-role">CEO · LogiTech SAS</div>
-        </div>
-        <div class="test-stars">★ 5.0</div>
-      </div>
-    </div>
-  </div>
-</div>
-
 <!-- PRICING -->
 <div class="section-wrap" id="tarifs">
   <div class="reveal" style="text-align:center">
@@ -1141,6 +1174,64 @@ document.querySelectorAll('.feat-item').forEach(item => {
     item.classList.add('active');
   });
 });
+
+// ── MOUSE PARALLAX ON BACKGROUND ──
+const bgLight = document.querySelector('.bg-light');
+const bgGrid  = document.querySelector('.bg-grid');
+if (!window.matchMedia('(hover: none)').matches) {
+  let tX = 0, tY = 0, cX = 0, cY = 0;
+  document.addEventListener('mousemove', e => {
+    tX = (e.clientX / innerWidth  - 0.5) * 28;
+    tY = (e.clientY / innerHeight - 0.5) * 18;
+  }, { passive: true });
+  (function parallax() {
+    cX += (tX - cX) * 0.06;
+    cY += (tY - cY) * 0.06;
+    bgLight.style.transform = `translate(${cX}px, ${cY}px) scale(1.05)`;
+    bgGrid.style.transform  = `translate(${cX * 0.4}px, ${cY * 0.4}px)`;
+    requestAnimationFrame(parallax);
+  })();
+}
+
+// ── MAGNETIC BUTTONS ──
+if (!window.matchMedia('(hover: none)').matches) {
+  document.querySelectorAll('.btn-primary').forEach(btn => {
+    btn.addEventListener('mousemove', e => {
+      const r = btn.getBoundingClientRect();
+      const x = (e.clientX - r.left - r.width  / 2) * 0.18;
+      const y = (e.clientY - r.top  - r.height / 2) * 0.18;
+      btn.style.transform = `translate(${x}px, ${y}px) translateY(-1px)`;
+    });
+    btn.addEventListener('mouseleave', () => {
+      btn.style.transform = '';
+    });
+  });
+}
+
+// ── HERO TITLE WORD SPLIT ──
+(function splitHeroTitle() {
+  const h1 = document.querySelector('.hero-title');
+  if (!h1) return;
+  // Preserve <em> wrapping
+  const raw = h1.innerHTML;
+  // Split by spaces and <br> while keeping em tag intact
+  const parts = raw.split(/(<br>|<em>.*?<\/em>)/g);
+  let delay = 0.25;
+  const result = parts.map(part => {
+    if (!part || part === '<br>') return part || '<br>';
+    if (part.startsWith('<em>')) {
+      delay += 0.08;
+      return `<span class="word-wrap"><span class="word-inner" style="animation-delay:${delay.toFixed(2)}s">${part}</span></span>`;
+    }
+    return part.split(' ').filter(w => w).map(word => {
+      delay += 0.06;
+      return `<span class="word-wrap"><span class="word-inner" style="animation-delay:${delay.toFixed(2)}s">${word}</span></span>`;
+    }).join(' ');
+  });
+  h1.innerHTML = result.join('');
+  h1.style.opacity = '1';
+  h1.style.animation = 'none';
+})();
 
 // ── LIVE BRIEF NOTIFICATION ──
 const briefs = [

@@ -316,6 +316,57 @@ tr:hover .row-actions { opacity: 1; }
 .toast-close { font-size: 14px; color: var(--muted); padding: 4px; flex-shrink: 0; }
 .toast-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--amber); flex-shrink: 0; animation: blink 1.2s infinite; }
 
+/* ── BORDER BEAM on stat cards ── */
+@property --dbeam {
+  syntax: '<angle>';
+  initial-value: 0deg;
+  inherits: false;
+}
+@keyframes dbeamSpin { to { --dbeam: 360deg; } }
+
+.stat-card { overflow: visible; }
+.stat-card::before {
+  content: '';
+  position: absolute; inset: -1px; border-radius: 13px;
+  background: conic-gradient(
+    from var(--dbeam),
+    transparent 0%, transparent 68%,
+    rgba(232,160,32,0.0) 74%,
+    rgba(232,160,32,0.55) 84%,
+    rgba(255,220,110,.9)  88%,
+    rgba(232,160,32,0.55) 93%,
+    transparent 99%
+  );
+  opacity: 0; z-index: -1; pointer-events: none;
+  animation: dbeamSpin 3.5s linear infinite;
+  transition: opacity .35s ease;
+}
+.stat-card:hover::before { opacity: 1; }
+
+/* ── TABLE ROWS stagger entry ── */
+@keyframes rowIn { from{opacity:0;transform:translateX(-8px)} to{opacity:1;transform:translateX(0)} }
+.brief-table tbody tr { animation: rowIn .35s ease both; }
+
+/* ── SIDEBAR active item — ambient glow ── */
+.sb-link.active {
+  box-shadow: 0 0 20px rgba(232,160,32,0.08);
+}
+
+/* ── TOPBAR amber progress indicator ── */
+.topbar::after {
+  content: '';
+  position: absolute; bottom: 0; left: 0;
+  height: 1px; width: 30%;
+  background: linear-gradient(90deg, transparent, rgba(232,160,32,0.4), transparent);
+  animation: topbarSlide 4s ease-in-out infinite;
+}
+@keyframes topbarSlide {
+  0%   { left: -30%; opacity: 0; }
+  10%  { opacity: 1; }
+  90%  { opacity: 1; }
+  100% { left: 100%; opacity: 0; }
+}
+
 /* TABLE SCROLL */
 .table-scroll { overflow-x: auto; -webkit-overflow-scrolling: touch; border-radius: 8px; }
 
@@ -802,8 +853,9 @@ const statusLabels={nouveau:'Nouveau',en_analyse:'En analyse',profils_envoyes:'E
 function renderTable(data){
   const tbody=document.getElementById('briefTbody');
   tbody.innerHTML='';
-  data.forEach(b=>{
+  data.forEach((b,i)=>{
     const tr=document.createElement('tr');
+    tr.style.animationDelay = (i * 0.045) + 's';
     tr.innerHTML=`
       <td><div class="brief-id">#${b.id}</div>${b.urgent?'<div style="font-size:10px;color:var(--red);margin-top:2px;font-family:var(--mono)">URGENT</div>':''}</td>
       <td><div class="client-name">${b.client}</div><div class="client-co">${b.co||''}</div></td>
