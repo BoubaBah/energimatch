@@ -5,24 +5,24 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>EnergyMatch — Trouvez l'expert énergie qu'il vous faut</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,400;0,9..144,700;1,9..144,300;1,9..144,400;1,9..144,700&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
 <style>
 :root {
-  --bg:          #05050a;
-  --violet:      #7c3aed;
-  --blue:        #3b82f6;
-  --teal:        #14b8a6;
-  --emerald:     #10b981;
-  --amber:       #f59e0b;
-  --indigo:      #6366f1;
-  --accent:      #a78bfa;
-  --white:       #f0f0ff;
-  --muted:       #6b7280;
-  --card:        rgba(255,255,255,0.035);
-  --card-border: rgba(255,255,255,0.065);
-  --font-serif:  'Instrument Serif', Georgia, serif;
-  --font-body:   'DM Sans', sans-serif;
-  --font-mono:   'DM Mono', monospace;
+  --bg:        #06050a;
+  --bg2:       #0a0910;
+  --amber:     #e8a020;
+  --amber-dim: rgba(232,160,32,0.08);
+  --amber-bdr: rgba(232,160,32,0.18);
+  --teal:      #2dd4bf;
+  --green:     #4ade80;
+  --white:     #f5f0e8;
+  --white2:    #c8c0b0;
+  --muted:     #6b6458;
+  --card:      rgba(245,240,232,0.03);
+  --card-bdr:  rgba(245,240,232,0.07);
+  --serif:     'Fraunces', Georgia, serif;
+  --sans:      'DM Sans', sans-serif;
+  --mono:      'DM Mono', monospace;
 }
 
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
@@ -31,108 +31,60 @@ html { scroll-behavior: smooth; }
 body {
   background: var(--bg);
   color: var(--white);
-  font-family: var(--font-body);
+  font-family: var(--sans);
   overflow-x: hidden;
   cursor: none;
 }
 
 /* ── CURSOR ── */
 .cursor {
-  position: fixed; width: 7px; height: 7px;
-  background: #fff; border-radius: 50%;
+  position: fixed; width: 6px; height: 6px;
+  background: var(--amber); border-radius: 50%;
   pointer-events: none; z-index: 9999;
   transform: translate(-50%,-50%);
-  mix-blend-mode: difference;
-  transition: width .2s, height .2s;
+  transition: width .2s, height .2s, opacity .2s;
+  mix-blend-mode: screen;
 }
 .cursor-ring {
-  position: fixed; width: 32px; height: 32px;
-  border: 1px solid rgba(167,139,250,0.5); border-radius: 50%;
+  position: fixed; width: 28px; height: 28px;
+  border: 1px solid rgba(232,160,32,0.35); border-radius: 50%;
   pointer-events: none; z-index: 9998;
   transform: translate(-50%,-50%);
 }
-body:has(a:hover) .cursor { width: 12px; height: 12px; }
-body:has(a:hover) .cursor-ring { width: 44px; height: 44px; border-color: rgba(167,139,250,0.3); }
+body:has(a:hover) .cursor { width: 10px; height: 10px; }
+body:has(a:hover) .cursor-ring { width: 38px; height: 38px; border-color: rgba(232,160,32,0.5); }
 
-/* ── AURORA ORBS ── */
-.orb {
-  position: fixed; border-radius: 50%;
-  pointer-events: none; z-index: 0;
-  will-change: transform;
-  filter: blur(0);
+/* ── BACKGROUND ── */
+/* Single amber light cone — top right */
+.bg-light {
+  position: fixed; inset: 0; z-index: 0; pointer-events: none;
+  background:
+    radial-gradient(ellipse 80% 60% at 85% -5%,  rgba(232,160,32,0.18) 0%, transparent 55%),
+    radial-gradient(ellipse 50% 40% at 15% 90%,  rgba(45,212,191,0.07) 0%, transparent 50%),
+    radial-gradient(ellipse 60% 60% at 50% 50%,  rgba(232,160,32,0.03) 0%, transparent 70%);
+  animation: bgBreath 12s ease-in-out infinite alternate;
 }
-.orb-1 {
-  width: min(700px, 90vw); height: min(700px, 90vw);
-  background: radial-gradient(circle, rgba(124,58,237,0.28) 0%, transparent 70%);
-  top: -20%; left: -15%;
-  filter: blur(80px);
-  animation: orb1 20s ease-in-out infinite alternate;
-}
-.orb-2 {
-  width: min(600px, 80vw); height: min(600px, 80vw);
-  background: radial-gradient(circle, rgba(59,130,246,0.22) 0%, transparent 70%);
-  top: -10%; right: -15%;
-  filter: blur(90px);
-  animation: orb2 25s ease-in-out infinite alternate;
-}
-.orb-3 {
-  width: min(500px, 70vw); height: min(500px, 70vw);
-  background: radial-gradient(circle, rgba(20,184,166,0.18) 0%, transparent 70%);
-  bottom: 5%; left: 10%;
-  filter: blur(100px);
-  animation: orb3 18s ease-in-out infinite alternate;
-}
-.orb-4 {
-  width: min(450px, 60vw); height: min(450px, 60vw);
-  background: radial-gradient(circle, rgba(99,102,241,0.2) 0%, transparent 70%);
-  bottom: 15%; right: -5%;
-  filter: blur(80px);
-  animation: orb4 22s ease-in-out infinite alternate;
-}
-.orb-5 {
-  width: min(350px, 50vw); height: min(350px, 50vw);
-  background: radial-gradient(circle, rgba(16,185,129,0.13) 0%, transparent 70%);
-  top: 40%; left: 35%;
-  filter: blur(110px);
-  animation: orb5 30s ease-in-out infinite alternate;
+@keyframes bgBreath {
+  0%   { opacity: 1; transform: scale(1); }
+  50%  { opacity: .85; transform: scale(1.02); }
+  100% { opacity: 1; transform: scale(1); }
 }
 
-@keyframes orb1 {
-  0%   { transform: translate(0,   0)    scale(1); }
-  33%  { transform: translate(6vw, 8vh)  scale(1.06); }
-  66%  { transform: translate(-3vw,14vh) scale(0.94); }
-  100% { transform: translate(4vw, -4vh) scale(1.1); }
-}
-@keyframes orb2 {
-  0%   { transform: translate(0,   0)     scale(1); }
-  40%  { transform: translate(-8vw, 6vh)  scale(1.08); }
-  80%  { transform: translate(-4vw, 12vh) scale(0.96); }
-  100% { transform: translate(-6vw, -8vh) scale(1.04); }
-}
-@keyframes orb3 {
-  0%   { transform: translate(0,   0)     scale(1); }
-  30%  { transform: translate(5vw, -8vh)  scale(1.05); }
-  70%  { transform: translate(10vw,-3vh)  scale(0.97); }
-  100% { transform: translate(3vw,  6vh)  scale(1.08); }
-}
-@keyframes orb4 {
-  0%   { transform: translate(0,   0)      scale(1); }
-  50%  { transform: translate(-6vw,-10vh)  scale(1.1); }
-  100% { transform: translate(-3vw, 5vh)   scale(0.95); }
-}
-@keyframes orb5 {
-  0%   { transform: translate(0,  0)     scale(1); }
-  25%  { transform: translate(4vw,-6vh)  scale(1.08); }
-  75%  { transform: translate(-5vw,8vh)  scale(0.93); }
-  100% { transform: translate(2vw,-2vh)  scale(1.04); }
+/* Grid overlay — faint circuit pattern */
+.bg-grid {
+  position: fixed; inset: 0; z-index: 0; pointer-events: none; opacity: .4;
+  background-image:
+    linear-gradient(rgba(245,240,232,0.025) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(245,240,232,0.025) 1px, transparent 1px);
+  background-size: 80px 80px;
+  mask-image: radial-gradient(ellipse 80% 80% at 50% 50%, black 0%, transparent 100%);
 }
 
-/* ── GRAIN ── */
+/* Grain */
 body::before {
   content: '';
-  position: fixed; inset: 0; z-index: 1;
-  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 512 512' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E");
-  pointer-events: none; opacity: 0.35;
+  position: fixed; inset: 0; z-index: 1; pointer-events: none; opacity: .3;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 512 512' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.05'/%3E%3C/svg%3E");
 }
 
 /* ── LAYOUT ── */
@@ -142,493 +94,463 @@ body::before {
 nav {
   position: fixed; top: 0; left: 0; right: 0; z-index: 100;
   display: flex; align-items: center; justify-content: space-between;
-  padding: 20px 48px;
-  background: transparent;
+  padding: 22px 52px;
   transition: background .4s, backdrop-filter .4s, border-color .4s;
   border-bottom: 1px solid transparent;
 }
 nav.scrolled {
-  background: rgba(5,5,10,0.8);
-  backdrop-filter: blur(24px) saturate(180%);
-  border-bottom-color: var(--card-border);
+  background: rgba(6,5,10,0.88);
+  backdrop-filter: blur(20px) saturate(180%);
+  border-bottom-color: var(--card-bdr);
 }
 .nav-logo {
   display: flex; align-items: center; gap: 10px;
-  font-family: var(--font-serif); font-style: italic; font-size: 20px;
-  text-decoration: none; color: var(--white); letter-spacing: -.3px;
+  font-family: var(--serif); font-style: italic; font-size: 19px;
+  text-decoration: none; color: var(--white); letter-spacing: -.2px;
+  font-optical-sizing: auto;
 }
 .logo-mark {
-  width: 30px; height: 30px;
-  background: linear-gradient(135deg, var(--violet), var(--blue));
-  border-radius: 8px; display: grid; place-items: center;
-  font-style: normal; font-size: 14px;
-  box-shadow: 0 0 20px rgba(124,58,237,0.4);
+  width: 28px; height: 28px;
+  background: var(--amber); border-radius: 6px;
+  display: grid; place-items: center; font-style: normal; font-size: 13px;
+  color: var(--bg); font-weight: 700; flex-shrink: 0;
+  box-shadow: 0 0 20px rgba(232,160,32,0.35);
 }
-.nav-links { display: flex; gap: 32px; }
+.nav-links { display: flex; gap: 36px; }
 .nav-links a {
-  color: var(--muted); text-decoration: none; font-size: 14px; font-weight: 400;
-  transition: color .2s; position: relative;
+  color: var(--muted); text-decoration: none; font-size: 13px; font-weight: 400;
+  transition: color .2s; position: relative; letter-spacing: .2px;
 }
-.nav-links a::after {
-  content: ''; position: absolute; bottom: -2px; left: 0; width: 0; height: 1px;
-  background: var(--accent); transition: width .3s;
-}
-.nav-links a:hover { color: var(--white); }
-.nav-links a:hover::after { width: 100%; }
+.nav-links a:hover { color: var(--white2); }
 .nav-cta {
-  background: rgba(124,58,237,0.15);
-  border: 1px solid rgba(124,58,237,0.3);
-  color: var(--accent); text-decoration: none; padding: 10px 22px; border-radius: 8px;
-  font-size: 14px; font-weight: 500; transition: all .3s;
+  background: none; border: 1px solid var(--amber-bdr);
+  color: var(--amber); text-decoration: none; padding: 9px 22px; border-radius: 6px;
+  font-size: 13px; font-weight: 400; transition: all .3s;
+  font-family: var(--mono); letter-spacing: .3px;
 }
 .nav-cta:hover {
-  background: rgba(124,58,237,0.25);
-  border-color: rgba(124,58,237,0.5);
-  box-shadow: 0 0 24px rgba(124,58,237,0.2);
+  background: var(--amber-dim);
+  border-color: rgba(232,160,32,0.35);
+  box-shadow: 0 0 20px rgba(232,160,32,0.1);
 }
 
 /* ── HAMBURGER ── */
 .nav-hamburger {
   display: none; flex-direction: column; gap: 5px; cursor: pointer;
-  padding: 7px; border: 1px solid var(--card-border); border-radius: 8px;
+  padding: 7px; border: 1px solid var(--card-bdr); border-radius: 6px;
   background: none;
 }
 .nav-hamburger span { display: block; width: 18px; height: 1px; background: var(--muted); transition: all .3s; }
-.nav-hamburger.open span:nth-child(1) { transform: translateY(6px) rotate(45deg); }
+.nav-hamburger.open span:nth-child(1) { transform: translateY(6px) rotate(45deg); background: var(--amber); }
 .nav-hamburger.open span:nth-child(2) { opacity: 0; }
-.nav-hamburger.open span:nth-child(3) { transform: translateY(-6px) rotate(-45deg); }
+.nav-hamburger.open span:nth-child(3) { transform: translateY(-6px) rotate(-45deg); background: var(--amber); }
 
 /* ── MOBILE MENU ── */
 .mobile-menu {
   display: none; position: fixed; inset: 0; z-index: 150;
-  background: rgba(5,5,10,0.97); backdrop-filter: blur(24px);
-  flex-direction: column; align-items: center; justify-content: center; gap: 36px;
+  background: rgba(6,5,10,0.97); backdrop-filter: blur(20px);
+  flex-direction: column; align-items: flex-start; justify-content: center;
+  gap: 0; padding: 0 10vw;
 }
 .mobile-menu.open { display: flex; }
 .mobile-menu a {
-  color: var(--white); text-decoration: none; font-family: var(--font-serif);
-  font-style: italic; font-size: 32px; opacity: 0; animation: fadeUp .4s forwards;
+  color: var(--white); text-decoration: none;
+  font-family: var(--serif); font-style: italic;
+  font-size: clamp(32px, 8vw, 52px); font-weight: 300;
+  padding: 12px 0;
+  border-bottom: 1px solid var(--card-bdr); width: 100%;
+  opacity: 0; animation: slideLeft .4s forwards;
+  display: block;
 }
-.mobile-menu a:nth-child(1) { animation-delay: .05s; }
-.mobile-menu a:nth-child(2) { animation-delay: .1s; }
-.mobile-menu a:nth-child(3) { animation-delay: .15s; }
-.mobile-menu a:nth-child(4) { animation-delay: .2s; }
-.mobile-menu a:nth-child(5) { animation-delay: .25s; }
-.mobile-menu-cta {
-  margin-top: 8px; font-style: normal !important; font-size: 18px !important;
-  font-family: var(--font-body) !important;
-  background: linear-gradient(135deg, var(--violet), var(--blue)) !important;
-  color: #fff !important; padding: 14px 40px; border-radius: 12px;
-  box-shadow: 0 0 40px rgba(124,58,237,0.3);
+.mobile-menu a:last-child { border-bottom: none; }
+.mobile-menu a:nth-child(1) { animation-delay: .04s; }
+.mobile-menu a:nth-child(2) { animation-delay: .08s; }
+.mobile-menu a:nth-child(3) { animation-delay: .12s; }
+.mobile-menu a:nth-child(4) { animation-delay: .16s; color: var(--amber); font-style: normal; font-family: var(--mono); font-size: clamp(14px, 4vw, 18px); margin-top: 16px; border: 1px solid var(--amber-bdr); padding: 14px 24px; border-radius: 6px; width: auto; }
+@keyframes slideLeft { from{opacity:0;transform:translateX(-24px)} to{opacity:1;transform:translateX(0)} }
+
+/* ── TICKER ── */
+.ticker {
+  border-bottom: 1px solid var(--card-bdr);
+  overflow: hidden; height: 36px; display: flex; align-items: center;
+  position: relative; margin-top: 0;
+  mask-image: linear-gradient(90deg, transparent 0%, black 5%, black 95%, transparent 100%);
 }
+.ticker-track {
+  display: flex; gap: 0; width: max-content;
+  animation: tickerScroll 30s linear infinite;
+}
+@keyframes tickerScroll { from{transform:translateX(0)} to{transform:translateX(-50%)} }
+.ticker-item {
+  display: flex; align-items: center; gap: 8px;
+  padding: 0 32px; font-size: 11px; font-family: var(--mono);
+  color: var(--muted); white-space: nowrap; letter-spacing: .5px;
+}
+.ticker-item .t-val { color: var(--white2); margin-left: 2px; }
+.ticker-item .t-up   { color: #4ade80; }
+.ticker-item .t-down { color: #f87171; }
+.ticker-sep { width: 1px; height: 14px; background: var(--card-bdr); margin: 0 0; }
 
 /* ── HERO ── */
 .hero {
   min-height: 100dvh; display: flex; flex-direction: column;
-  align-items: center; justify-content: center;
-  padding: 120px 24px 80px; text-align: center; position: relative;
+  justify-content: center; padding: 80px 52px 80px;
+  position: relative; overflow: hidden;
 }
+
+/* Giant background number */
+.hero-bg-num {
+  position: absolute; right: -2vw; top: 50%; transform: translateY(-50%);
+  font-family: var(--serif); font-size: clamp(200px, 28vw, 380px);
+  font-weight: 700; font-style: italic;
+  color: transparent;
+  -webkit-text-stroke: 1px rgba(232,160,32,0.06);
+  line-height: 1; pointer-events: none; user-select: none;
+  animation: numBreath 8s ease-in-out infinite alternate;
+  letter-spacing: -10px;
+}
+@keyframes numBreath {
+  from { opacity: .6; transform: translateY(-50%) scale(1); }
+  to   { opacity: 1; transform: translateY(-50%) scale(1.02); }
+}
+
+.hero-inner { max-width: 680px; position: relative; z-index: 1; }
 
 .hero-badge {
   display: inline-flex; align-items: center; gap: 8px;
-  background: rgba(167,139,250,0.08); border: 1px solid rgba(167,139,250,0.2);
-  color: var(--accent); padding: 6px 16px; border-radius: 100px;
-  font-size: 12px; font-weight: 500; margin-bottom: 36px;
-  font-family: var(--font-mono); letter-spacing: .5px;
-  opacity: 0; animation: fadeUp .6s .2s forwards;
+  font-family: var(--mono); font-size: 11px; letter-spacing: 1.5px;
+  color: var(--amber); text-transform: uppercase;
+  margin-bottom: 40px;
+  opacity: 0; animation: fadeIn .6s .1s forwards;
 }
-.badge-dot { width: 6px; height: 6px; background: var(--emerald); border-radius: 50%; animation: pulse 1.5s infinite; }
-@keyframes pulse { 0%,100%{opacity:1;transform:scale(1)} 50%{opacity:.5;transform:scale(.8)} }
+.badge-dot {
+  width: 5px; height: 5px; background: var(--green); border-radius: 50%;
+  animation: blink 1.8s ease-in-out infinite;
+}
+@keyframes blink { 0%,100%{opacity:1} 50%{opacity:.3} }
+.badge-line { width: 32px; height: 1px; background: var(--amber-bdr); }
 
 .hero-title {
-  font-family: var(--font-serif);
-  font-size: clamp(44px, 7.5vw, 88px);
-  font-weight: 400; line-height: 1.05; letter-spacing: -1px;
+  font-family: var(--serif);
+  font-size: clamp(52px, 7vw, 96px);
+  font-weight: 300; line-height: 1.05;
+  letter-spacing: -2px;
   margin-bottom: 28px;
-  opacity: 0; animation: fadeUp .7s .35s forwards;
+  color: var(--white);
+  opacity: 0; animation: fadeIn .7s .2s forwards;
 }
-.hero-title .line { display: block; overflow: hidden; }
-.hero-title .line span { display: block; animation: slideUp .7s forwards; opacity: 0; }
-.hero-title .line:nth-child(1) span { animation-delay: .35s; }
-.hero-title .line:nth-child(2) span { animation-delay: .5s; font-style: italic; }
-.hero-title .line:nth-child(3) span { animation-delay: .65s; }
-
-.hero-title .gradient {
-  background: linear-gradient(90deg, var(--accent) 0%, var(--blue) 40%, var(--teal) 80%, var(--emerald) 100%);
-  background-clip: text; -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+.hero-title em {
+  font-style: italic; font-weight: 300;
+  background: linear-gradient(90deg, var(--amber) 0%, #f5cc70 50%, var(--amber) 100%);
   background-size: 200% 100%;
-  animation: shimmer 6s linear infinite;
+  -webkit-background-clip: text; background-clip: text;
+  -webkit-text-fill-color: transparent;
+  animation: shimmer 5s linear infinite;
 }
-
-@keyframes shimmer { 0%{background-position:0%} 100%{background-position:200%} }
-@keyframes slideUp { from{transform:translateY(110%);opacity:0} to{transform:translateY(0);opacity:1} }
+@keyframes shimmer { 0%{background-position:100%} 100%{background-position:-100%} }
+@keyframes fadeIn  { from{opacity:0;transform:translateY(16px)} to{opacity:1;transform:translateY(0)} }
 
 .hero-sub {
-  max-width: 480px; color: var(--muted); font-size: 16px; line-height: 1.75;
-  margin-bottom: 44px; font-weight: 300;
-  opacity: 0; animation: fadeUp .6s .85s forwards;
+  color: var(--muted); font-size: 16px; line-height: 1.8;
+  margin-bottom: 48px; font-weight: 300; max-width: 480px;
+  opacity: 0; animation: fadeIn .6s .35s forwards;
 }
 
 .hero-actions {
-  display: flex; gap: 14px; align-items: center; flex-wrap: wrap; justify-content: center;
-  opacity: 0; animation: fadeUp .6s 1.05s forwards;
+  display: flex; gap: 14px; align-items: center;
+  opacity: 0; animation: fadeIn .6s .5s forwards;
 }
-
 .btn-primary {
-  background: linear-gradient(135deg, var(--violet), var(--blue));
-  color: #fff; text-decoration: none; padding: 15px 32px; border-radius: 10px;
-  font-size: 15px; font-weight: 500; font-family: var(--font-body);
-  transition: all .3s; position: relative; overflow: hidden;
-  box-shadow: 0 0 32px rgba(124,58,237,0.25), 0 0 0 1px rgba(124,58,237,0.2);
-  border: none; cursor: pointer;
+  background: var(--amber); color: var(--bg);
+  text-decoration: none; padding: 14px 30px; border-radius: 6px;
+  font-size: 14px; font-weight: 500; font-family: var(--sans);
+  transition: all .25s; position: relative; overflow: hidden;
+  box-shadow: 0 0 28px rgba(232,160,32,0.25);
+  border: none; cursor: pointer; letter-spacing: .2px;
+  display: inline-flex; align-items: center; gap: 8px;
 }
-.btn-primary::before {
+.btn-primary::after {
   content: ''; position: absolute; inset: 0;
-  background: linear-gradient(135deg, transparent, rgba(255,255,255,0.12), transparent);
-  transform: translateX(-100%); transition: transform .6s;
+  background: rgba(255,255,255,0); transition: background .25s;
 }
-.btn-primary:hover::before { transform: translateX(100%); }
-.btn-primary:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 0 48px rgba(124,58,237,0.4), 0 0 0 1px rgba(124,58,237,0.3);
-}
+.btn-primary:hover { transform: translateY(-1px); box-shadow: 0 0 44px rgba(232,160,32,0.4); }
+.btn-primary:active { transform: translateY(0); }
 
 .btn-ghost {
-  color: var(--muted); text-decoration: none; padding: 15px 20px; border-radius: 10px;
-  font-size: 15px; font-weight: 400; transition: color .2s; display: flex; align-items: center; gap: 10px;
+  color: var(--muted); text-decoration: none; padding: 14px 20px;
+  font-size: 14px; font-weight: 400; transition: color .2s;
+  display: flex; align-items: center; gap: 10px;
 }
-.btn-ghost:hover { color: var(--white); }
+.btn-ghost:hover { color: var(--white2); }
 .play-icon {
-  width: 34px; height: 34px; border: 1px solid var(--card-border); border-radius: 50%;
-  display: grid; place-items: center; font-size: 11px; transition: all .3s;
+  width: 32px; height: 32px; border: 1px solid var(--card-bdr); border-radius: 50%;
+  display: grid; place-items: center; font-size: 10px; transition: all .25s;
 }
-.btn-ghost:hover .play-icon { border-color: var(--accent); background: rgba(167,139,250,0.1); }
+.btn-ghost:hover .play-icon { border-color: var(--amber-bdr); background: var(--amber-dim); }
 
-/* ── HERO STATS ── */
+/* ── STATS ROW ── */
 .hero-stats {
-  display: flex; gap: 48px; margin-top: 72px; align-items: center;
-  opacity: 0; animation: fadeUp .6s 1.25s forwards;
+  display: flex; gap: 0; margin-top: 72px;
+  border: 1px solid var(--card-bdr); border-radius: 10px;
+  overflow: hidden; max-width: 560px;
+  opacity: 0; animation: fadeIn .6s .65s forwards;
 }
-.stat { text-align: left; }
+.stat {
+  flex: 1; padding: 20px 24px;
+  border-right: 1px solid var(--card-bdr);
+}
+.stat:last-child { border-right: none; }
 .stat-num {
-  font-family: var(--font-serif); font-size: 30px; font-weight: 400;
-  background: linear-gradient(135deg, var(--white), var(--accent));
-  background-clip: text; -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+  font-family: var(--serif); font-size: 26px; font-weight: 300;
+  color: var(--white); letter-spacing: -.5px; line-height: 1;
+  margin-bottom: 4px;
 }
-.stat-label { font-size: 12px; color: var(--muted); margin-top: 3px; font-weight: 300; font-family: var(--font-mono); }
-.stat-divider { width: 1px; background: var(--card-border); height: 40px; align-self: center; }
-
-/* ── MOCKUP ── */
-.hero-mockup {
-  margin-top: 72px; position: relative;
-  opacity: 0; animation: fadeUp .8s 1.4s forwards;
-}
-.mockup-glow {
-  position: absolute; inset: -60px;
-  background: radial-gradient(ellipse at 50% 50%, rgba(124,58,237,0.12) 0%, transparent 70%);
-  pointer-events: none;
-}
-.mockup-frame {
-  width: min(680px, 92vw);
-  background: rgba(5,5,10,0.85);
-  border: 1px solid rgba(124,58,237,0.15);
-  border-radius: 18px; overflow: hidden;
-  backdrop-filter: blur(20px);
-  box-shadow: 0 40px 80px rgba(0,0,0,0.6), 0 0 0 1px rgba(255,255,255,0.04) inset;
-  animation: floatMockup 7s ease-in-out infinite;
-}
-@keyframes floatMockup { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-10px)} }
-
-.mockup-topbar {
-  background: rgba(255,255,255,0.025); border-bottom: 1px solid var(--card-border);
-  padding: 10px 18px; display: flex; align-items: center; gap: 6px;
-}
-.dot { width: 10px; height: 10px; border-radius: 50%; }
-.dot-r { background: #ff5f57; } .dot-y { background: #febc2e; } .dot-g { background: #28c840; }
-.mockup-url {
-  flex: 1; background: rgba(255,255,255,0.03); border-radius: 5px;
-  padding: 3px 10px; font-size: 11px; color: var(--muted); margin-left: 6px;
-  font-family: var(--font-mono);
-}
-.mockup-body { padding: 20px; }
-.mockup-header-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 18px; }
-.mockup-title { font-family: var(--font-serif); font-style: italic; font-size: 16px; }
-.status-badge {
-  font-size: 11px; padding: 4px 10px; border-radius: 100px; font-weight: 500;
-  background: rgba(124,58,237,0.1); color: var(--accent); border: 1px solid rgba(124,58,237,0.25);
-  font-family: var(--font-mono);
-}
-.mockup-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; margin-bottom: 18px; }
-.metric-card {
-  background: rgba(255,255,255,0.025); border: 1px solid var(--card-border);
-  border-radius: 10px; padding: 12px;
-}
-.metric-label { font-size: 10px; color: var(--muted); margin-bottom: 6px; font-family: var(--font-mono); text-transform: uppercase; letter-spacing: .5px; }
-.metric-val { font-family: var(--font-mono); font-size: 20px; font-weight: 500; }
-.metric-val.blue { color: var(--blue); } .metric-val.teal { color: var(--teal); } .metric-val.amber { color: var(--amber); }
-.metric-delta { font-size: 10px; color: var(--emerald); margin-top: 3px; }
-
-.matching-row {
-  display: flex; align-items: center; gap: 10px; padding: 10px 12px;
-  background: rgba(255,255,255,0.02); border: 1px solid var(--card-border);
-  border-radius: 8px; margin-bottom: 6px;
-  animation: slideInRight .5s forwards; opacity: 0;
-}
-.matching-row:nth-child(1) { animation-delay: 2.2s; }
-.matching-row:nth-child(2) { animation-delay: 2.5s; }
-.matching-row:nth-child(3) { animation-delay: 2.8s; }
-@keyframes slideInRight { from{transform:translateX(16px);opacity:0} to{transform:translateX(0);opacity:1} }
-
-.expert-avatar {
-  width: 32px; height: 32px; border-radius: 8px;
-  display: grid; place-items: center; font-size: 11px; font-weight: 600; flex-shrink: 0;
-  font-family: var(--font-mono);
-}
-.av-blue  { background: rgba(59,130,246,.15); color: var(--blue);    border: 1px solid rgba(59,130,246,.25); }
-.av-teal  { background: rgba(20,184,166,.15); color: var(--teal);    border: 1px solid rgba(20,184,166,.25); }
-.av-amber { background: rgba(245,158,11,.15); color: var(--amber);   border: 1px solid rgba(245,158,11,.25); }
-.expert-info { flex: 1; min-width: 0; }
-.expert-name { font-size: 12px; font-weight: 500; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-.expert-role { font-size: 10px; color: var(--muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-.score-badge {
-  font-family: var(--font-mono); font-size: 13px; font-weight: 500;
-  color: var(--accent); background: rgba(124,58,237,0.08);
-  padding: 3px 9px; border-radius: 6px; flex-shrink: 0;
-}
-.rank { font-size: 10px; color: var(--muted); width: 16px; text-align: center; font-family: var(--font-mono); }
+.stat-num em { font-style: italic; color: var(--amber); }
+.stat-label { font-size: 10px; color: var(--muted); font-family: var(--mono); letter-spacing: 1px; text-transform: uppercase; }
 
 /* ── LOGOS ── */
-.logos { padding: 56px 48px; border-top: 1px solid var(--card-border); }
-.logos-label { text-align: center; font-size: 11px; color: var(--muted); letter-spacing: 2px; text-transform: uppercase; margin-bottom: 28px; font-family: var(--font-mono); }
-.logos-track-wrap { overflow: hidden; mask-image: linear-gradient(90deg, transparent 0%, black 10%, black 90%, transparent 100%); }
+.logos {
+  padding: 0 0 0;
+  border-top: 1px solid var(--card-bdr);
+  border-bottom: 1px solid var(--card-bdr);
+}
+.logos-inner {
+  max-width: 1200px; margin: 0 auto; padding: 0 52px;
+  display: grid; grid-template-columns: auto 1fr;
+  align-items: center; gap: 0;
+}
+.logos-label {
+  font-size: 10px; color: var(--muted); letter-spacing: 1.5px; text-transform: uppercase;
+  font-family: var(--mono); padding: 20px 32px 20px 0;
+  border-right: 1px solid var(--card-bdr); white-space: nowrap;
+}
+.logos-track-wrap {
+  overflow: hidden; padding: 0 32px;
+  mask-image: linear-gradient(90deg, transparent 0%, black 8%, black 92%, transparent 100%);
+}
 .logos-track {
-  display: flex; gap: 60px; width: max-content;
-  animation: scrollLogos 22s linear infinite;
+  display: flex; gap: 48px; width: max-content;
+  animation: scrollLogos 24s linear infinite;
 }
 .logos-track:hover { animation-play-state: paused; }
 @keyframes scrollLogos { from{transform:translateX(0)} to{transform:translateX(-50%)} }
 .logo-item {
-  font-family: var(--font-serif); font-style: italic; font-size: 15px; font-weight: 400;
-  color: rgba(255,255,255,0.18); white-space: nowrap; transition: color .3s;
-  display: flex; align-items: center; gap: 8px;
+  font-family: var(--serif); font-style: italic; font-size: 14px;
+  color: rgba(245,240,232,0.2); white-space: nowrap; transition: color .3s;
+  display: flex; align-items: center; gap: 7px; padding: 18px 0;
 }
-.logo-item:hover { color: rgba(255,255,255,0.45); }
-.logo-icon-sm { font-size: 16px; opacity: .5; font-style: normal; }
+.logo-item:hover { color: rgba(245,240,232,0.45); }
 
 /* ── SECTIONS ── */
-section { padding: 120px 48px; max-width: 1200px; margin: 0 auto; }
-.section-tag {
-  display: inline-flex; align-items: center; gap: 8px;
-  font-size: 11px; font-weight: 500; color: var(--accent);
-  letter-spacing: 2px; text-transform: uppercase; margin-bottom: 20px;
-  font-family: var(--font-mono);
+.section-wrap { max-width: 1200px; margin: 0 auto; padding: 120px 52px; }
+
+.section-eyebrow {
+  font-family: var(--mono); font-size: 10px; letter-spacing: 2px;
+  text-transform: uppercase; color: var(--amber); margin-bottom: 20px;
+  display: flex; align-items: center; gap: 12px;
 }
-.section-tag::before { content: ''; width: 20px; height: 1px; background: var(--accent); }
+.section-eyebrow::after { content: ''; flex: 0 0 24px; height: 1px; background: var(--amber-bdr); }
+
 .section-title {
-  font-family: var(--font-serif); font-size: clamp(34px, 4.5vw, 56px);
-  font-weight: 400; line-height: 1.1; letter-spacing: -.5px; margin-bottom: 16px;
+  font-family: var(--serif); font-size: clamp(36px, 4vw, 56px);
+  font-weight: 300; line-height: 1.1; letter-spacing: -1px; margin-bottom: 16px;
 }
-.section-sub { color: var(--muted); font-size: 16px; line-height: 1.75; max-width: 520px; font-weight: 300; }
+.section-title em { font-style: italic; }
+.section-sub { color: var(--muted); font-size: 15px; line-height: 1.8; max-width: 500px; font-weight: 300; }
 
 /* ── HOW IT WORKS ── */
-.hiw-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-top: 60px; }
+.hiw-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1px; margin-top: 64px; background: var(--card-bdr); border: 1px solid var(--card-bdr); border-radius: 14px; overflow: hidden; }
 .hiw-card {
-  background: var(--card); border: 1px solid var(--card-border);
-  border-radius: 18px; padding: 32px;
-  position: relative; overflow: hidden; cursor: default;
-  transition: border-color .3s, transform .3s;
+  background: var(--bg2); padding: 36px 32px;
+  position: relative; overflow: hidden; transition: background .3s;
 }
-.hiw-card:hover { border-color: rgba(124,58,237,0.2); transform: translateY(-3px); }
+.hiw-card:hover { background: rgba(10,9,16,0.95); }
 .hiw-card::before {
-  content: ''; position: absolute; inset: 0;
-  background: radial-gradient(circle at var(--mx,50%) var(--my,50%), rgba(124,58,237,0.06) 0%, transparent 60%);
-  opacity: 0; transition: opacity .3s;
+  content: attr(data-num);
+  position: absolute; top: 20px; right: 24px;
+  font-family: var(--serif); font-style: italic; font-size: 56px; font-weight: 700;
+  color: rgba(232,160,32,0.04); line-height: 1; pointer-events: none;
+  transition: color .3s;
 }
-.hiw-card:hover::before { opacity: 1; }
-.step-num-bg {
-  font-family: var(--font-serif); font-size: 72px; font-weight: 400;
-  color: rgba(255,255,255,0.03); position: absolute; top: 16px; right: 20px;
-  line-height: 1; font-style: italic;
-}
+.hiw-card:hover::before { color: rgba(232,160,32,0.07); }
 .step-icon {
-  width: 48px; height: 48px; border-radius: 12px; margin-bottom: 22px;
-  display: grid; place-items: center; font-size: 22px;
-  background: rgba(124,58,237,0.1); border: 1px solid rgba(124,58,237,0.2);
+  width: 44px; height: 44px; border-radius: 10px; margin-bottom: 20px;
+  display: grid; place-items: center; font-size: 20px;
+  border: 1px solid var(--card-bdr); background: var(--card);
 }
-.step-icon.teal-i  { background: rgba(20,184,166,.1);  border-color: rgba(20,184,166,.2); }
-.step-icon.amber-i { background: rgba(245,158,11,.1);  border-color: rgba(245,158,11,.2); }
-.step-icon.green-i { background: rgba(16,185,129,.1);  border-color: rgba(16,185,129,.2); }
-.step-title { font-family: var(--font-serif); font-size: 20px; font-weight: 400; margin-bottom: 10px; }
-.step-desc { color: var(--muted); font-size: 14px; line-height: 1.7; font-weight: 300; }
-.step-time {
-  display: inline-flex; align-items: center; gap: 6px;
-  margin-top: 18px; font-size: 12px; color: var(--accent); font-family: var(--font-mono);
-  background: rgba(124,58,237,0.07); padding: 5px 12px; border-radius: 100px;
+.step-title { font-family: var(--serif); font-size: 19px; font-weight: 300; margin-bottom: 10px; }
+.step-desc { color: var(--muted); font-size: 13px; line-height: 1.75; font-weight: 300; }
+.step-pill {
+  display: inline-flex; align-items: center; gap: 6px; margin-top: 18px;
+  font-size: 10px; font-family: var(--mono); letter-spacing: .8px;
+  padding: 5px 12px; border-radius: 100px; text-transform: uppercase;
 }
+.pill-amber { color: var(--amber);  background: rgba(232,160,32,0.07);  border: 1px solid rgba(232,160,32,0.15); }
+.pill-teal  { color: var(--teal);   background: rgba(45,212,191,0.06);   border: 1px solid rgba(45,212,191,0.15); }
+.pill-green { color: var(--green);  background: rgba(74,222,128,0.06);   border: 1px solid rgba(74,222,128,0.15); }
 
 /* ── FEATURES ── */
-.features-layout { display: grid; grid-template-columns: 1fr 1fr; gap: 64px; align-items: center; margin-top: 60px; }
-.feat-list { display: flex; flex-direction: column; gap: 6px; }
+.features-layout { display: grid; grid-template-columns: 1fr 1fr; gap: 80px; align-items: start; margin-top: 64px; }
+.feat-list { display: flex; flex-direction: column; gap: 0; }
 .feat-item {
-  display: flex; align-items: flex-start; gap: 16px; padding: 18px; border-radius: 12px;
-  border: 1px solid transparent; cursor: pointer; transition: all .25s;
+  display: grid; grid-template-columns: 40px 1fr; gap: 16px;
+  padding: 20px 0; border-bottom: 1px solid var(--card-bdr);
+  cursor: pointer; transition: all .25s; position: relative;
 }
-.feat-item:hover, .feat-item.active { background: var(--card); border-color: var(--card-border); }
-.feat-item.active { border-color: rgba(124,58,237,0.2); background: rgba(124,58,237,0.04); }
-.feat-icon {
-  width: 42px; height: 42px; border-radius: 10px; flex-shrink: 0;
-  display: grid; place-items: center; font-size: 18px;
-  background: rgba(124,58,237,0.08); border: 1px solid rgba(124,58,237,0.15);
+.feat-item:first-child { border-top: 1px solid var(--card-bdr); }
+.feat-item::before {
+  content: ''; position: absolute; left: -20px; top: 50%;
+  transform: translateY(-50%) scaleY(0); width: 2px; height: 60%;
+  background: var(--amber); transition: transform .3s;
 }
-.feat-content .feat-title { font-family: var(--font-serif); font-size: 16px; font-weight: 400; margin-bottom: 4px; }
-.feat-content .feat-desc { color: var(--muted); font-size: 13px; line-height: 1.6; font-weight: 300; }
-.feat-visual {
-  background: rgba(5,5,10,0.7); border: 1px solid var(--card-border);
-  border-radius: 18px; padding: 28px; min-height: 380px;
-  position: sticky; top: 100px;
-  display: flex; flex-direction: column; gap: 14px;
-  box-shadow: 0 0 60px rgba(124,58,237,0.06);
+.feat-item.active::before { transform: translateY(-50%) scaleY(1); }
+.feat-num {
+  font-family: var(--mono); font-size: 10px; color: var(--muted);
+  letter-spacing: 1px; padding-top: 4px; transition: color .25s;
 }
-.feat-visual-title { font-family: var(--font-mono); font-size: 11px; font-weight: 500; color: var(--accent); margin-bottom: 4px; letter-spacing: 1px; text-transform: uppercase; }
+.feat-item.active .feat-num { color: var(--amber); }
+.feat-content .feat-title {
+  font-family: var(--serif); font-size: 15px; font-weight: 400; margin-bottom: 4px;
+  transition: color .25s;
+}
+.feat-item.active .feat-title { color: var(--white); }
+.feat-item:not(.active) .feat-title { color: var(--white2); }
+.feat-content .feat-desc { color: var(--muted); font-size: 13px; line-height: 1.65; font-weight: 300; }
 
-.ai-chat-row { display: flex; gap: 10px; align-items: flex-start; }
-.ai-avatar {
-  width: 30px; height: 30px; border-radius: 8px; flex-shrink: 0;
-  background: linear-gradient(135deg, var(--violet), var(--blue));
-  display: grid; place-items: center; font-size: 13px;
+.feat-visual {
+  position: sticky; top: 100px;
+  background: var(--bg2); border: 1px solid var(--card-bdr);
+  border-radius: 14px; padding: 28px; min-height: 360px;
+  display: flex; flex-direction: column; gap: 14px;
 }
-.ai-bubble {
-  background: rgba(255,255,255,0.035); border: 1px solid var(--card-border);
-  border-radius: 0 10px 10px 10px; padding: 10px 14px; font-size: 12px; line-height: 1.6; color: var(--muted); max-width: 260px;
+.feat-visual-label {
+  font-family: var(--mono); font-size: 9px; color: var(--amber);
+  letter-spacing: 2px; text-transform: uppercase; margin-bottom: 4px;
 }
-.ai-bubble.user-bubble { background: rgba(124,58,237,0.08); border-color: rgba(124,58,237,0.2); border-radius: 10px 0 10px 10px; color: var(--white); margin-left: auto; }
-.ai-chat-row.user { flex-direction: row-reverse; }
-.typing-dots { display: flex; gap: 4px; padding: 4px 0; }
-.typing-dots span { width: 5px; height: 5px; background: var(--muted); border-radius: 50%; animation: typingDot 1.2s infinite; }
-.typing-dots span:nth-child(2) { animation-delay: .2s; }
-.typing-dots span:nth-child(3) { animation-delay: .4s; }
-@keyframes typingDot { 0%,100%{opacity:.3;transform:translateY(0)} 50%{opacity:1;transform:translateY(-3px)} }
+.ai-row { display: flex; gap: 10px; align-items: flex-start; }
+.ai-av {
+  width: 28px; height: 28px; border-radius: 6px; flex-shrink: 0;
+  background: var(--amber); display: grid; place-items: center;
+  font-size: 12px; color: var(--bg);
+}
+.ai-bub {
+  background: var(--card); border: 1px solid var(--card-bdr);
+  border-radius: 0 10px 10px 10px; padding: 10px 14px;
+  font-size: 12px; line-height: 1.65; color: var(--muted); max-width: 260px;
+}
+.ai-bub.user {
+  background: var(--amber-dim); border-color: var(--amber-bdr);
+  border-radius: 10px 0 10px 10px; color: var(--white2); margin-left: auto;
+}
+.ai-row.right { flex-direction: row-reverse; }
+.feat-stats { display: flex; gap: 8px; margin-top: auto; }
+.feat-stat {
+  flex: 1; background: var(--card); border: 1px solid var(--card-bdr);
+  border-radius: 8px; padding: 12px; text-align: center;
+}
+.fs-val { font-family: var(--mono); font-size: 20px; color: var(--amber); font-weight: 500; }
+.fs-label { font-size: 9px; color: var(--muted); font-family: var(--mono); letter-spacing: .8px; text-transform: uppercase; margin-top: 2px; }
 
 /* ── EXPERTS ── */
-.experts-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 18px; margin-top: 60px; }
+.experts-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 16px; margin-top: 64px; }
 .expert-card {
-  background: var(--card); border: 1px solid var(--card-border);
-  border-radius: 18px; padding: 26px; transition: all .3s; cursor: pointer;
+  background: var(--card); border: 1px solid var(--card-bdr);
+  border-radius: 12px; padding: 24px; transition: all .3s;
   position: relative; overflow: hidden;
 }
+.expert-card:hover { border-color: var(--amber-bdr); transform: translateY(-3px); }
 .expert-card::after {
-  content: ''; position: absolute; bottom: 0; left: 0; right: 0; height: 2px;
-  background: linear-gradient(90deg, var(--violet), var(--blue), var(--teal));
-  transform: scaleX(0); transform-origin: left; transition: transform .4s;
+  content: ''; position: absolute; bottom: 0; left: 0; right: 0; height: 1px;
+  background: linear-gradient(90deg, transparent, var(--amber), transparent);
+  opacity: 0; transition: opacity .3s;
 }
-.expert-card:hover { border-color: rgba(124,58,237,0.2); transform: translateY(-4px); box-shadow: 0 16px 40px rgba(0,0,0,0.3); }
-.expert-card:hover::after { transform: scaleX(1); }
+.expert-card:hover::after { opacity: 1; }
 .expert-head { display: flex; align-items: center; gap: 12px; margin-bottom: 14px; }
-.expert-av-lg {
-  width: 48px; height: 48px; border-radius: 12px;
-  display: grid; place-items: center; font-weight: 500; font-size: 14px;
-  flex-shrink: 0; font-family: var(--font-mono);
+.expert-av {
+  width: 44px; height: 44px; border-radius: 8px;
+  display: grid; place-items: center; font-weight: 500; font-size: 13px;
+  font-family: var(--mono); flex-shrink: 0;
+  border: 1px solid var(--card-bdr); background: var(--card);
+  color: var(--muted);
 }
-.av-lg-1 { background: rgba(59,130,246,.12);  color: var(--blue);    border: 1px solid rgba(59,130,246,.25); }
-.av-lg-2 { background: rgba(20,184,166,.12);  color: var(--teal);    border: 1px solid rgba(20,184,166,.25); }
-.av-lg-3 { background: rgba(245,158,11,.12);  color: var(--amber);   border: 1px solid rgba(245,158,11,.25); }
-.expert-meta .name { font-family: var(--font-serif); font-size: 15px; font-weight: 400; }
-.expert-meta .role-tag { font-size: 11px; color: var(--muted); margin-top: 2px; font-family: var(--font-mono); }
-.expert-bio { font-size: 13px; color: var(--muted); line-height: 1.6; margin-bottom: 14px; font-weight: 300; }
+.expert-meta .name { font-family: var(--serif); font-size: 14px; font-weight: 400; }
+.expert-meta .role-tag { font-size: 10px; color: var(--muted); font-family: var(--mono); margin-top: 2px; letter-spacing: .5px; }
+.expert-bio { font-size: 12px; color: var(--muted); line-height: 1.7; margin-bottom: 14px; font-weight: 300; }
 .expert-tags { display: flex; flex-wrap: wrap; gap: 5px; }
 .tag {
-  font-size: 10px; padding: 3px 9px; border-radius: 100px; font-family: var(--font-mono);
-  background: rgba(255,255,255,0.04); border: 1px solid var(--card-border);
-  color: rgba(255,255,255,0.4);
+  font-size: 10px; padding: 3px 8px; border-radius: 4px; font-family: var(--mono);
+  background: var(--card); border: 1px solid var(--card-bdr); color: var(--muted);
 }
-.expert-footer { display: flex; justify-content: space-between; align-items: center; margin-top: 14px; padding-top: 14px; border-top: 1px solid var(--card-border); }
-.rating { font-size: 12px; color: var(--amber); font-weight: 500; font-family: var(--font-mono); }
-.missions-count { font-size: 11px; color: var(--muted); font-family: var(--font-mono); }
-.avail { display: flex; align-items: center; gap: 5px; font-size: 11px; }
-.avail-dot { width: 5px; height: 5px; border-radius: 50%; background: var(--emerald); animation: pulse 1.5s infinite; }
+.expert-footer { display: flex; justify-content: space-between; align-items: center; margin-top: 14px; padding-top: 14px; border-top: 1px solid var(--card-bdr); }
+.rating { font-size: 11px; color: var(--amber); font-family: var(--mono); }
+.missions-ct { font-size: 10px; color: var(--muted); font-family: var(--mono); }
+.avail { display: flex; align-items: center; gap: 5px; font-size: 10px; font-family: var(--mono); }
+.avail-dot { width: 5px; height: 5px; border-radius: 50%; background: var(--green); animation: blink 2s infinite; }
 
 /* ── PRICING ── */
-.pricing-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; max-width: 780px; margin: 60px auto 0; }
+.pricing-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; max-width: 760px; margin: 64px auto 0; }
 .price-card {
-  background: var(--card); border: 1px solid var(--card-border);
-  border-radius: 20px; padding: 36px; position: relative; overflow: hidden;
-  transition: transform .3s, border-color .3s;
+  background: var(--card); border: 1px solid var(--card-bdr);
+  border-radius: 14px; padding: 36px; position: relative; transition: border-color .3s;
 }
-.price-card:hover { transform: translateY(-3px); }
-.price-card.featured {
-  background: linear-gradient(160deg, rgba(124,58,237,0.08), rgba(59,130,246,0.04));
-  border-color: rgba(124,58,237,0.25);
-  box-shadow: 0 0 48px rgba(124,58,237,0.08);
-}
+.price-card.featured { border-color: var(--amber-bdr); background: var(--amber-dim); }
 .price-popular {
-  position: absolute; top: 18px; right: 18px;
-  font-size: 10px; font-weight: 500; letter-spacing: 1px; text-transform: uppercase;
-  color: #fff; background: linear-gradient(90deg, var(--violet), var(--blue));
-  padding: 4px 12px; border-radius: 100px; font-family: var(--font-mono);
+  position: absolute; top: 16px; right: 16px;
+  font-size: 9px; font-family: var(--mono); letter-spacing: 1.5px; text-transform: uppercase;
+  color: var(--bg); background: var(--amber); padding: 3px 10px; border-radius: 4px;
 }
-.price-name { font-family: var(--font-serif); font-style: italic; font-size: 18px; margin-bottom: 10px; }
-.price-amount {
-  font-family: var(--font-mono); font-size: 44px; font-weight: 500;
-  letter-spacing: -2px; line-height: 1; margin-bottom: 4px;
-}
-.price-amount span { font-size: 18px; letter-spacing: 0; vertical-align: top; margin-top: 6px; display: inline-block; color: var(--muted); }
-.price-per { font-size: 12px; color: var(--muted); margin-bottom: 26px; font-family: var(--font-mono); }
-.price-features { list-style: none; display: flex; flex-direction: column; gap: 11px; margin-bottom: 28px; }
-.price-features li { display: flex; align-items: center; gap: 10px; font-size: 14px; color: var(--muted); font-weight: 300; }
-.check { color: var(--emerald); font-size: 13px; }
+.price-name { font-family: var(--serif); font-style: italic; font-size: 17px; font-weight: 300; margin-bottom: 12px; }
+.price-amount { font-family: var(--mono); font-size: 42px; font-weight: 500; line-height: 1; margin-bottom: 4px; letter-spacing: -2px; }
+.price-amount .cur { font-size: 17px; color: var(--muted); letter-spacing: 0; vertical-align: top; margin-top: 4px; display: inline-block; }
+.price-per { font-size: 11px; color: var(--muted); margin-bottom: 28px; font-family: var(--mono); }
+.price-features { list-style: none; display: flex; flex-direction: column; gap: 10px; margin-bottom: 28px; }
+.price-features li { display: flex; align-items: center; gap: 10px; font-size: 13px; color: var(--muted); font-weight: 300; }
+.check { color: var(--green); font-size: 11px; font-family: var(--mono); }
 
 /* ── CTA ── */
-.cta-section {
-  margin: 0 48px 120px; border-radius: 24px;
-  background: linear-gradient(135deg, rgba(124,58,237,0.08) 0%, rgba(59,130,246,0.05) 50%, rgba(20,184,166,0.04) 100%);
-  border: 1px solid rgba(124,58,237,0.15);
-  padding: 80px; text-align: center; position: relative; overflow: hidden;
+.cta-wrap { padding: 0 52px 120px; }
+.cta-inner {
+  border: 1px solid var(--amber-bdr); border-radius: 16px;
+  padding: 80px 64px; text-align: center; position: relative; overflow: hidden;
+  background: radial-gradient(ellipse 60% 80% at 50% 0%, rgba(232,160,32,0.07) 0%, transparent 60%);
 }
-.cta-section::before {
-  content: ''; position: absolute; inset: 0;
-  background: radial-gradient(ellipse at 50% 0%, rgba(124,58,237,0.12) 0%, transparent 60%);
-  pointer-events: none;
+.cta-inner::before {
+  content: ''; position: absolute; top: 0; left: 10%; right: 10%; height: 1px;
+  background: linear-gradient(90deg, transparent, var(--amber-bdr), var(--amber), var(--amber-bdr), transparent);
 }
-.cta-section .section-title { letter-spacing: -.5px; margin-bottom: 16px; }
-.cta-section .section-sub { margin: 0 auto 36px; }
+.cta-inner .section-title { margin-bottom: 16px; }
+.cta-inner .section-sub { margin: 0 auto 36px; }
 
 /* ── FOOTER ── */
 footer {
-  border-top: 1px solid var(--card-border); padding: 40px 48px;
+  border-top: 1px solid var(--card-bdr); padding: 32px 52px;
   display: flex; justify-content: space-between; align-items: center;
-  color: var(--muted); font-size: 12px;
+  color: var(--muted); font-size: 11px; font-family: var(--mono);
 }
-.foot-logo { font-family: var(--font-serif); font-style: italic; font-size: 17px; color: var(--white); }
+.foot-logo { font-family: var(--serif); font-style: italic; font-size: 16px; color: var(--white2); letter-spacing: -.2px; }
 .foot-links { display: flex; gap: 24px; }
-.foot-links a { color: var(--muted); text-decoration: none; transition: color .2s; font-size: 12px; }
-.foot-links a:hover { color: var(--white); }
+.foot-links a { color: var(--muted); text-decoration: none; transition: color .2s; font-size: 11px; letter-spacing: .3px; }
+.foot-links a:hover { color: var(--white2); }
 
 /* ── ANIMATIONS ── */
-@keyframes fadeUp {
-  from { opacity: 0; transform: translateY(20px); }
-  to   { opacity: 1; transform: translateY(0); }
-}
-.reveal { opacity: 0; transform: translateY(24px); transition: opacity .7s ease, transform .7s ease; }
+.reveal { opacity: 0; transform: translateY(20px); transition: opacity .7s ease, transform .7s ease; }
 .reveal.visible { opacity: 1; transform: translateY(0); }
 .reveal-delay-1 { transition-delay: .1s; }
 .reveal-delay-2 { transition-delay: .2s; }
 .reveal-delay-3 { transition-delay: .3s; }
 
 /* ── SCROLLBAR ── */
-::-webkit-scrollbar { width: 3px; }
+::-webkit-scrollbar { width: 2px; }
 ::-webkit-scrollbar-track { background: var(--bg); }
-::-webkit-scrollbar-thumb { background: rgba(124,58,237,0.3); border-radius: 2px; }
+::-webkit-scrollbar-thumb { background: var(--amber-bdr); border-radius: 2px; }
 
-/* ── TOUCH DEVICE ── */
+/* ── TOUCH / MOBILE ── */
 @media (hover: none) {
   body { cursor: auto; }
   .cursor, .cursor-ring { display: none; }
-  /* Reduce orb filter blur cost on mobile */
-  .orb-1, .orb-2 { filter: blur(60px); }
-  .orb-3, .orb-4, .orb-5 { filter: blur(80px); }
+  .hero-bg-num { opacity: .15; }
 }
 
-/* ── RESPONSIVE ── */
 @media (max-width: 900px) {
   .features-layout { grid-template-columns: 1fr; gap: 40px; }
   .feat-visual { position: static; min-height: auto; }
@@ -636,80 +558,64 @@ footer {
 }
 
 @media (max-width: 768px) {
-  /* Nav */
   nav { padding: 14px 20px; }
   .nav-links, .nav-cta { display: none; }
   .nav-hamburger { display: flex; }
 
-  /* Hero */
-  .hero { padding: 88px 20px 60px; min-height: 100dvh; }
-  .hero-title { font-size: clamp(38px, 10vw, 56px); }
+  .ticker { display: none; }
+
+  .hero { padding: 80px 20px 60px; }
+  .hero-bg-num { font-size: clamp(120px, 38vw, 200px); right: -4vw; opacity: .5; }
+  .hero-title { font-size: clamp(40px, 10vw, 64px); letter-spacing: -1px; }
   .hero-sub { font-size: 15px; }
-  .hero-actions { flex-direction: column; align-items: stretch; width: 100%; gap: 10px; }
-  .btn-primary { text-align: center; padding: 16px 28px; }
-  .btn-ghost { justify-content: center; }
-  .hero-stats { flex-wrap: wrap; gap: 20px 32px; margin-top: 48px; }
-  .stat-divider { display: none; }
-  .stat-num { font-size: 24px; }
+  .hero-actions { flex-direction: column; align-items: stretch; gap: 10px; }
+  .btn-primary { text-align: center; justify-content: center; }
+  .hero-stats { margin-top: 48px; max-width: 100%; }
+  .stat { padding: 16px 18px; }
+  .stat-num { font-size: 21px; }
+  .stat-label { font-size: 9px; }
 
-  /* Mockup */
-  .hero-mockup { margin-top: 48px; }
-  .mockup-grid { grid-template-columns: 1fr 1fr; gap: 8px; }
-  .metric-val { font-size: 16px; }
-  .expert-name { font-size: 11px; }
-  .expert-role { display: none; }
+  .logos-inner { grid-template-columns: 1fr; padding: 0 20px; }
+  .logos-label { border-right: none; border-bottom: 1px solid var(--card-bdr); padding: 14px 0; }
+  .logos-track-wrap { padding: 0; }
 
-  /* Logos */
-  .logos { padding: 40px 20px; }
+  .section-wrap { padding: 72px 20px; }
+  .section-title { font-size: clamp(28px, 8vw, 44px); }
 
-  /* Sections */
-  section { padding: 72px 20px; }
-  .section-title { font-size: clamp(28px, 7vw, 40px); }
+  .hiw-grid { grid-template-columns: 1fr; gap: 1px; }
+  .hiw-card { padding: 24px 20px; }
 
-  /* How it works */
-  .hiw-grid { grid-template-columns: 1fr; gap: 14px; }
-  .hiw-card { padding: 24px; }
-  .step-num-bg { font-size: 56px; }
+  .feat-item { padding: 16px 0; }
+  .feat-item::before { left: -12px; }
 
-  /* Experts */
-  .experts-grid { grid-template-columns: 1fr; }
+  .experts-grid { grid-template-columns: 1fr; gap: 12px; }
+  .expert-card { padding: 20px; }
 
-  /* Pricing */
-  .pricing-grid { grid-template-columns: 1fr; gap: 14px; }
-  .price-card { padding: 28px; }
+  .pricing-grid { grid-template-columns: 1fr; gap: 12px; max-width: 100%; }
+  .price-card { padding: 28px 24px; }
 
-  /* CTA */
-  .cta-section { margin: 0 16px 72px; padding: 48px 20px; }
-  .cta-section .btn-primary { display: block; text-align: center; }
+  .cta-wrap { padding: 0 16px 80px; }
+  .cta-inner { padding: 48px 24px; }
 
-  /* Footer */
-  footer { flex-direction: column; gap: 20px; text-align: center; padding: 32px 20px; }
-  .foot-links { flex-wrap: wrap; justify-content: center; gap: 14px; }
+  footer { flex-direction: column; gap: 16px; text-align: center; padding: 28px 20px; }
+  .foot-links { flex-wrap: wrap; justify-content: center; gap: 16px; }
 }
 
 @media (max-width: 480px) {
-  .hero-title { font-size: clamp(32px, 11vw, 44px); letter-spacing: -.5px; }
-  .hero-badge { font-size: 10px; padding: 5px 12px; }
-  .mockup-grid { grid-template-columns: 1fr 1fr 1fr; }
-  .metric-val { font-size: 14px; }
-  .metric-label { font-size: 9px; }
-  .hiw-card { padding: 20px; }
-  .price-amount { font-size: 36px; }
+  .hero-title { font-size: clamp(34px, 11vw, 48px); }
+  .hero-stats { flex-direction: column; border-radius: 10px; }
+  .stat { border-right: none; border-bottom: 1px solid var(--card-bdr); }
+  .stat:last-child { border-bottom: none; }
+  .hero-bg-num { display: none; }
 }
 </style>
 </head>
 <body>
 
-<!-- Cursor -->
-<div class="cursor" id="cursor"></div>
+<div class="cursor"      id="cursor"></div>
 <div class="cursor-ring" id="cursorRing"></div>
-
-<!-- Aurora orbs -->
-<div class="orb orb-1"></div>
-<div class="orb orb-2"></div>
-<div class="orb orb-3"></div>
-<div class="orb orb-4"></div>
-<div class="orb orb-5"></div>
+<div class="bg-light"></div>
+<div class="bg-grid"></div>
 
 <div class="content">
 
@@ -734,116 +640,87 @@ footer {
 <div class="mobile-menu" id="mobileMenu">
   <a href="#comment" onclick="closeMobileMenu()">Comment ça marche</a>
   <a href="#experts" onclick="closeMobileMenu()">Les experts</a>
-  <a href="#tarifs" onclick="closeMobileMenu()">Tarifs</a>
-  <a href="brief-wizard.html" class="mobile-menu-cta" onclick="closeMobileMenu()">Déposer un brief →</a>
+  <a href="#tarifs"  onclick="closeMobileMenu()">Tarifs</a>
+  <a href="brief-wizard.html" onclick="closeMobileMenu()">Déposer un brief →</a>
+</div>
+
+<!-- TICKER -->
+<div class="ticker" style="margin-top:0">
+  <div class="ticker-track">
+    <div class="ticker-item">PEX FIOUL <span class="t-val">847 €/t</span><span class="t-up">+1.2%</span></div>
+    <div class="ticker-sep"></div>
+    <div class="ticker-item">GAZ TTF <span class="t-val">42.3 €/MWh</span><span class="t-down">−0.8%</span></div>
+    <div class="ticker-sep"></div>
+    <div class="ticker-item">ELEC SPOT <span class="t-val">68.4 €/MWh</span><span class="t-up">+3.1%</span></div>
+    <div class="ticker-sep"></div>
+    <div class="ticker-item">CEE — VOLUME MENSUEL <span class="t-val">2.4M kWhc</span><span class="t-up">+0.5%</span></div>
+    <div class="ticker-sep"></div>
+    <div class="ticker-item">CO₂ EUA <span class="t-val">62.8 €/t</span><span class="t-down">−1.4%</span></div>
+    <div class="ticker-sep"></div>
+    <div class="ticker-item">ENR PART PROD. FR <span class="t-val">28.7%</span><span class="t-up">+0.3%</span></div>
+    <div class="ticker-sep"></div>
+    <!-- duplicate for seamless loop -->
+    <div class="ticker-item">PEX FIOUL <span class="t-val">847 €/t</span><span class="t-up">+1.2%</span></div>
+    <div class="ticker-sep"></div>
+    <div class="ticker-item">GAZ TTF <span class="t-val">42.3 €/MWh</span><span class="t-down">−0.8%</span></div>
+    <div class="ticker-sep"></div>
+    <div class="ticker-item">ELEC SPOT <span class="t-val">68.4 €/MWh</span><span class="t-up">+3.1%</span></div>
+    <div class="ticker-sep"></div>
+    <div class="ticker-item">CEE — VOLUME MENSUEL <span class="t-val">2.4M kWhc</span><span class="t-up">+0.5%</span></div>
+    <div class="ticker-sep"></div>
+    <div class="ticker-item">CO₂ EUA <span class="t-val">62.8 €/t</span><span class="t-down">−1.4%</span></div>
+    <div class="ticker-sep"></div>
+    <div class="ticker-item">ENR PART PROD. FR <span class="t-val">28.7%</span><span class="t-up">+0.3%</span></div>
+  </div>
 </div>
 
 <!-- HERO -->
 <section class="hero">
-  <div class="hero-badge">
-    <span class="badge-dot"></span>
-    500+ experts vérifiés · Réponse sous 48h
-  </div>
-
-  <h1 class="hero-title">
-    <span class="line"><span>Trouvez l'expert</span></span>
-    <span class="line"><span class="gradient">énergie</span></span>
-    <span class="line"><span>qu'il vous faut.</span></span>
-  </h1>
-
-  <p class="hero-sub">
-    Décrivez votre projet en 3 minutes. Notre IA sélectionne les 3 meilleurs experts du secteur et vous les envoie sous 48h.
-  </p>
-
-  <div class="hero-actions">
-    <a href="brief-wizard.html" class="btn-primary">Déposer mon brief gratuitement →</a>
-    <a href="#comment" class="btn-ghost">
-      <div class="play-icon">▶</div>
-      Comment ça marche
-    </a>
-  </div>
-
-  <div class="hero-stats">
-    <div class="stat">
-      <div class="stat-num" data-target="500" data-suffix="+">500+</div>
-      <div class="stat-label">Experts vérifiés</div>
+  <div class="hero-bg-num">48</div>
+  <div class="hero-inner">
+    <div class="hero-badge">
+      <span class="badge-dot"></span>
+      <span class="badge-line"></span>
+      Matching IA · 500+ experts vérifiés
     </div>
-    <div class="stat-divider"></div>
-    <div class="stat">
-      <div class="stat-num">48h</div>
-      <div class="stat-label">Délai de réponse</div>
-    </div>
-    <div class="stat-divider"></div>
-    <div class="stat">
-      <div class="stat-num" data-target="98" data-suffix="%">98%</div>
-      <div class="stat-label">Satisfaction</div>
-    </div>
-    <div class="stat-divider"></div>
-    <div class="stat">
-      <div class="stat-num" data-target="2400" data-suffix="+">2 400+</div>
-      <div class="stat-label">Missions réalisées</div>
-    </div>
-  </div>
 
-  <div class="hero-mockup">
-    <div class="mockup-glow"></div>
-    <div class="mockup-frame">
-      <div class="mockup-topbar">
-        <div class="dot dot-r"></div>
-        <div class="dot dot-y"></div>
-        <div class="dot dot-g"></div>
-        <div class="mockup-url">app.energymatch.fr/dashboard</div>
+    <h1 class="hero-title">
+      Trouvez l'expert<br>
+      <em>énergie</em><br>
+      qu'il vous faut.
+    </h1>
+
+    <p class="hero-sub">
+      Décrivez votre projet en 3 minutes. Notre IA analyse votre brief et vous envoie les 3 meilleurs experts du secteur sous 48 heures.
+    </p>
+
+    <div class="hero-actions">
+      <a href="brief-wizard.html" class="btn-primary">
+        Déposer mon brief gratuitement
+        <span style="opacity:.6">→</span>
+      </a>
+      <a href="#comment" class="btn-ghost">
+        <div class="play-icon">▶</div>
+        Voir comment ça marche
+      </a>
+    </div>
+
+    <div class="hero-stats">
+      <div class="stat">
+        <div class="stat-num"><em data-target="500" data-suffix="+">500+</em></div>
+        <div class="stat-label">Experts vérifiés</div>
       </div>
-      <div class="mockup-body">
-        <div class="mockup-header-row">
-          <div class="mockup-title">Brief #2847 — Analyse en cours</div>
-          <div class="status-badge">✦ IA active</div>
-        </div>
-        <div class="mockup-grid">
-          <div class="metric-card">
-            <div class="metric-label">Analysés</div>
-            <div class="metric-val blue">47</div>
-            <div class="metric-delta">↑ Score moy. 88</div>
-          </div>
-          <div class="metric-card">
-            <div class="metric-label">Sélectionnés</div>
-            <div class="metric-val teal">3</div>
-            <div class="metric-delta">↑ Top profils</div>
-          </div>
-          <div class="metric-card">
-            <div class="metric-label">Envoi dans</div>
-            <div class="metric-val amber">2h</div>
-            <div class="metric-delta">Planifié</div>
-          </div>
-        </div>
-        <div style="font-size:10px;color:var(--muted);margin-bottom:8px;font-family:var(--font-mono);letter-spacing:1px;text-transform:uppercase">Meilleurs matchs</div>
-        <div class="matching-row">
-          <div class="rank">1</div>
-          <div class="expert-avatar av-blue">AM</div>
-          <div class="expert-info">
-            <div class="expert-name">Alexandre Morin</div>
-            <div class="expert-role">Courtier · Île-de-France</div>
-          </div>
-          <div class="score-badge">96</div>
-        </div>
-        <div class="matching-row">
-          <div class="rank">2</div>
-          <div class="expert-avatar av-teal">MD</div>
-          <div class="expert-info">
-            <div class="expert-name">Marine Dupont</div>
-            <div class="expert-role">Consultant CEE · Occitanie</div>
-          </div>
-          <div class="score-badge">91</div>
-        </div>
-        <div class="matching-row">
-          <div class="rank">3</div>
-          <div class="expert-avatar av-amber">CF</div>
-          <div class="expert-info">
-            <div class="expert-name">Claire Fontaine</div>
-            <div class="expert-role">Bureau études · Bretagne</div>
-          </div>
-          <div class="score-badge">87</div>
-        </div>
+      <div class="stat">
+        <div class="stat-num"><em>48h</em></div>
+        <div class="stat-label">Délai garanti</div>
+      </div>
+      <div class="stat">
+        <div class="stat-num"><em data-target="98" data-suffix="%">98%</em></div>
+        <div class="stat-label">Satisfaction</div>
+      </div>
+      <div class="stat">
+        <div class="stat-num"><em data-target="2400" data-suffix="+">2400+</em></div>
+        <div class="stat-label">Missions</div>
       </div>
     </div>
   </div>
@@ -851,217 +728,208 @@ footer {
 
 <!-- LOGOS -->
 <div class="logos">
-  <div class="logos-label">Ils nous font confiance</div>
-  <div class="logos-track-wrap">
-    <div class="logos-track">
-      <div class="logo-item"><span class="logo-icon-sm">⚡</span>Engie B2B</div>
-      <div class="logo-item"><span class="logo-icon-sm">🏭</span>TotalEnergies</div>
-      <div class="logo-item"><span class="logo-icon-sm">🌿</span>Schneider</div>
-      <div class="logo-item"><span class="logo-icon-sm">🔆</span>EDF Pro</div>
-      <div class="logo-item"><span class="logo-icon-sm">🏢</span>Bouygues</div>
-      <div class="logo-item"><span class="logo-icon-sm">🌍</span>Veolia</div>
-      <div class="logo-item"><span class="logo-icon-sm">⚡</span>Engie B2B</div>
-      <div class="logo-item"><span class="logo-icon-sm">🏭</span>TotalEnergies</div>
-      <div class="logo-item"><span class="logo-icon-sm">🌿</span>Schneider</div>
-      <div class="logo-item"><span class="logo-icon-sm">🔆</span>EDF Pro</div>
-      <div class="logo-item"><span class="logo-icon-sm">🏢</span>Bouygues</div>
-      <div class="logo-item"><span class="logo-icon-sm">🌍</span>Veolia</div>
+  <div class="logos-inner">
+    <div class="logos-label">Ils nous font confiance</div>
+    <div class="logos-track-wrap">
+      <div class="logos-track">
+        <div class="logo-item">Engie B2B</div>
+        <div class="logo-item">TotalEnergies</div>
+        <div class="logo-item">Schneider Electric</div>
+        <div class="logo-item">EDF Pro</div>
+        <div class="logo-item">Bouygues Énergie</div>
+        <div class="logo-item">Veolia</div>
+        <div class="logo-item">Suez</div>
+        <div class="logo-item">Dalkia</div>
+        <!-- dupe -->
+        <div class="logo-item">Engie B2B</div>
+        <div class="logo-item">TotalEnergies</div>
+        <div class="logo-item">Schneider Electric</div>
+        <div class="logo-item">EDF Pro</div>
+        <div class="logo-item">Bouygues Énergie</div>
+        <div class="logo-item">Veolia</div>
+        <div class="logo-item">Suez</div>
+        <div class="logo-item">Dalkia</div>
+      </div>
     </div>
   </div>
 </div>
 
 <!-- HOW IT WORKS -->
-<section id="comment">
+<div class="section-wrap" id="comment">
   <div class="reveal">
-    <div class="section-tag">Processus</div>
+    <div class="section-eyebrow">Processus</div>
     <h2 class="section-title">Simple, rapide,<br><em>et efficace.</em></h2>
-    <p class="section-sub">Quatre étapes pour connecter votre projet au meilleur expert du secteur.</p>
+    <p class="section-sub">Quatre étapes pour connecter votre projet au meilleur expert.</p>
   </div>
   <div class="hiw-grid">
-    <div class="hiw-card reveal reveal-delay-1">
-      <div class="step-num-bg">01</div>
+    <div class="hiw-card reveal reveal-delay-1" data-num="01">
       <div class="step-icon">📋</div>
       <h3 class="step-title">Décrivez votre besoin</h3>
-      <p class="step-desc">Remplissez notre formulaire guidé en 3 minutes. Zone, expertise, budget, urgence.</p>
-      <div class="step-time">⏱ 3 minutes</div>
+      <p class="step-desc">Remplissez notre formulaire guidé en 3 minutes. Zone, expertise, budget, urgence — tout ce qu'il faut pour un matching précis.</p>
+      <div class="step-pill pill-amber">⏱ 3 minutes</div>
     </div>
-    <div class="hiw-card reveal reveal-delay-2">
-      <div class="step-num-bg">02</div>
-      <div class="step-icon teal-i">🤖</div>
+    <div class="hiw-card reveal reveal-delay-2" data-num="02">
+      <div class="step-icon">🤖</div>
       <h3 class="step-title">L'IA analyse et matche</h3>
-      <p class="step-desc">Notre agent parcourt 500+ profils, score chaque expert sur 100 points et sélectionne les 3 meilleurs.</p>
-      <div class="step-time" style="color:var(--teal);background:rgba(20,184,166,0.07)">⚡ Analyse automatique</div>
+      <p class="step-desc">Notre agent parcourt 500+ profils vérifiés et score chaque expert sur 100 points selon 8 critères objectifs.</p>
+      <div class="step-pill pill-teal">⚡ Automatique</div>
     </div>
-    <div class="hiw-card reveal reveal-delay-1">
-      <div class="step-num-bg">03</div>
-      <div class="step-icon amber-i">📬</div>
+    <div class="hiw-card reveal reveal-delay-1" data-num="03">
+      <div class="step-icon">📬</div>
       <h3 class="step-title">Recevez les profils</h3>
-      <p class="step-desc">Sous 48h, vous recevez les 3 profils par email avec scores, certifications et justifications.</p>
-      <div class="step-time" style="color:var(--amber);background:rgba(245,158,11,0.07)">📫 Sous 48h</div>
+      <p class="step-desc">Sous 48h, vous recevez par email les 3 profils sélectionnés avec leur score, leurs certifications et une justification détaillée.</p>
+      <div class="step-pill pill-amber">📫 Sous 48h</div>
     </div>
-    <div class="hiw-card reveal reveal-delay-2">
-      <div class="step-num-bg">04</div>
-      <div class="step-icon green-i">🤝</div>
+    <div class="hiw-card reveal reveal-delay-2" data-num="04">
+      <div class="step-icon">🤝</div>
       <h3 class="step-title">Choisissez et démarrez</h3>
-      <p class="step-desc">Contactez l'expert de votre choix directement. Satisfaction garantie ou remboursement immédiat.</p>
-      <div class="step-time" style="color:var(--emerald);background:rgba(16,185,129,0.07)">✓ Satisfait ou remboursé</div>
+      <p class="step-desc">Contactez l'expert de votre choix. Si aucun profil ne vous convient, remboursement immédiat sans condition.</p>
+      <div class="step-pill pill-green">✓ Satisfait ou remboursé</div>
     </div>
   </div>
-</section>
+</div>
 
 <!-- FEATURES -->
-<section>
+<div class="section-wrap">
   <div class="reveal">
-    <div class="section-tag">Fonctionnalités</div>
+    <div class="section-eyebrow">Fonctionnalités</div>
     <h2 class="section-title">Pourquoi EnergyMatch<br><em>est différent.</em></h2>
   </div>
   <div class="features-layout">
     <div class="feat-list">
       <div class="feat-item active reveal">
-        <div class="feat-icon">🧠</div>
+        <div class="feat-num">01</div>
         <div class="feat-content">
           <div class="feat-title">Matching IA propriétaire</div>
-          <div class="feat-desc">Scoring sur 8 critères : zone, certifications, disponibilité, historique de missions.</div>
+          <div class="feat-desc">Notre agent score chaque expert sur 8 critères : zone, certifications, disponibilité, historique de missions et note client.</div>
         </div>
       </div>
       <div class="feat-item reveal reveal-delay-1">
-        <div class="feat-icon">✅</div>
+        <div class="feat-num">02</div>
         <div class="feat-content">
           <div class="feat-title">Experts vérifiés & certifiés</div>
-          <div class="feat-desc">RGE, OPQIBI, QualiPV, CEE Expert — toutes les certifications validées manuellement.</div>
+          <div class="feat-desc">RGE, OPQIBI, QualiPV, CEE Expert — toutes les certifications sont contrôlées manuellement avant publication.</div>
         </div>
       </div>
       <div class="feat-item reveal reveal-delay-2">
-        <div class="feat-icon">⚡</div>
+        <div class="feat-num">03</div>
         <div class="feat-content">
           <div class="feat-title">Toute la filière énergie</div>
-          <div class="feat-desc">Courtiers, auditeurs, installateurs PV, consultants CEE, bureaux d'études thermique.</div>
+          <div class="feat-desc">Courtiers, auditeurs, installateurs PV, consultants CEE, bureaux d'études — une seule plateforme, toute l'expertise.</div>
         </div>
       </div>
       <div class="feat-item reveal reveal-delay-3">
-        <div class="feat-icon">🔒</div>
+        <div class="feat-num">04</div>
         <div class="feat-content">
-          <div class="feat-title">Garantie satisfaction</div>
-          <div class="feat-desc">Aucun profil ne correspond ? Remboursement immédiat, sans condition.</div>
+          <div class="feat-title">Garantie satisfaction totale</div>
+          <div class="feat-desc">Aucun profil ne correspond à votre besoin ? Remboursement immédiat, sans friction, sans condition.</div>
         </div>
       </div>
     </div>
     <div class="feat-visual reveal reveal-delay-1">
-      <div class="feat-visual-title">Agent IA — Analyse en temps réel</div>
-      <div class="ai-chat-row">
-        <div class="ai-avatar">🤖</div>
-        <div class="ai-bubble">Analyse du brief #2847… Type : Courtier énergie · Zone : Île-de-France · Urgence : immédiate</div>
+      <div class="feat-visual-label">Agent IA — Analyse en cours</div>
+      <div class="ai-row">
+        <div class="ai-av">⚡</div>
+        <div class="ai-bub">Analyse du brief #2847… Type&nbsp;: Courtier énergie · Zone&nbsp;: Île-de-France · Urgence&nbsp;: immédiate</div>
       </div>
-      <div class="ai-chat-row user" style="margin-top:8px">
-        <div class="ai-bubble user-bubble">Priorité disponibilité immédiate + expertise multi-sites gaz</div>
+      <div class="ai-row right" style="margin-top:10px">
+        <div class="ai-bub user">Priorité dispo immédiate + expertise multi-sites gaz</div>
       </div>
-      <div class="ai-chat-row" style="margin-top:8px">
-        <div class="ai-avatar">🤖</div>
-        <div class="ai-bubble">
+      <div class="ai-row" style="margin-top:10px">
+        <div class="ai-av">⚡</div>
+        <div class="ai-bub">
           Recherche dans 500+ profils…<br><br>
-          ✦ Alexandre Morin — 96/100<br>
+          ✦ Alexandre Morin — <strong style="color:var(--amber)">96/100</strong><br>
           Zone IDF ✓ · Dispo ✓ · Multi-sites ✓<br><br>
-          ✦ Marine Dupont — 91/100<br>
+          ✦ Marine Dupont — <strong style="color:var(--amber)">91/100</strong><br>
           Zone nationale ✓ · CEE Expert ✓<br><br>
-          <span style="color:var(--teal)">Sélection finalisée → Envoi email client</span>
+          <span style="color:var(--green)">→ Sélection finalisée. Envoi email.</span>
         </div>
       </div>
-      <div style="margin-top:auto;display:flex;gap:8px">
-        <div style="flex:1;background:rgba(124,58,237,0.06);border:1px solid rgba(124,58,237,0.15);border-radius:10px;padding:10px;text-align:center">
-          <div style="font-family:var(--font-mono);font-size:22px;font-weight:500;color:var(--accent)">96</div>
-          <div style="font-size:10px;color:var(--muted);font-family:var(--font-mono)">Score top match</div>
-        </div>
-        <div style="flex:1;background:rgba(20,184,166,0.05);border:1px solid rgba(20,184,166,0.15);border-radius:10px;padding:10px;text-align:center">
-          <div style="font-family:var(--font-mono);font-size:22px;font-weight:500;color:var(--teal)">47</div>
-          <div style="font-size:10px;color:var(--muted);font-family:var(--font-mono)">Profils analysés</div>
-        </div>
-        <div style="flex:1;background:rgba(16,185,129,0.05);border:1px solid rgba(16,185,129,0.15);border-radius:10px;padding:10px;text-align:center">
-          <div style="font-family:var(--font-mono);font-size:22px;font-weight:500;color:var(--emerald)">3</div>
-          <div style="font-size:10px;color:var(--muted);font-family:var(--font-mono)">Sélectionnés</div>
+      <div class="feat-stats">
+        <div class="feat-stat"><div class="fs-val">96</div><div class="fs-label">Top match</div></div>
+        <div class="feat-stat"><div class="fs-val">47</div><div class="fs-label">Analysés</div></div>
+        <div class="feat-stat" style="border-color:rgba(74,222,128,0.15);background:rgba(74,222,128,0.04)">
+          <div class="fs-val" style="color:var(--green)">3</div>
+          <div class="fs-label">Sélectionnés</div>
         </div>
       </div>
     </div>
   </div>
-</section>
+</div>
 
 <!-- EXPERTS -->
-<section id="experts">
+<div class="section-wrap" id="experts">
   <div class="reveal" style="text-align:center">
-    <div class="section-tag" style="justify-content:center">Notre réseau</div>
+    <div class="section-eyebrow" style="justify-content:center">Notre réseau</div>
     <h2 class="section-title">Des experts <em>de premier plan.</em></h2>
-    <p class="section-sub" style="margin:0 auto">Chaque profil est vérifié manuellement. Certifications validées, missions trackées.</p>
+    <p class="section-sub" style="margin:0 auto">Chaque profil est vérifié manuellement. Certifications validées, missions trackées, avis authentiques.</p>
   </div>
   <div class="experts-grid">
     <div class="expert-card reveal">
       <div class="expert-head">
-        <div class="expert-av-lg av-lg-1">AM</div>
+        <div class="expert-av">AM</div>
         <div class="expert-meta">
           <div class="name">Alexandre Morin</div>
-          <div class="role-tag">Courtier énergie</div>
+          <div class="role-tag">Courtier énergie · IDF</div>
         </div>
       </div>
-      <p class="expert-bio">10 ans d'expérience en courtage multi-énergie. Spécialisé grands comptes et multi-sites. Partenaire de 15 fournisseurs nationaux.</p>
-      <div class="expert-tags">
-        <span class="tag">CEE</span><span class="tag">Gaz</span><span class="tag">Électricité</span><span class="tag">Multi-sites</span>
-      </div>
+      <p class="expert-bio">10 ans en courtage multi-énergie. Spécialisé grands comptes et multi-sites. Partenaire de 15 fournisseurs nationaux.</p>
+      <div class="expert-tags"><span class="tag">CEE</span><span class="tag">Gaz</span><span class="tag">Élec</span><span class="tag">Multi-sites</span></div>
       <div class="expert-footer">
-        <div><div class="rating">★ 4.9</div><div class="missions-count">142 missions</div></div>
-        <div class="avail"><div class="avail-dot"></div><span style="color:var(--emerald);font-size:11px">Disponible</span></div>
+        <div><div class="rating">★ 4.9</div><div class="missions-ct">142 missions</div></div>
+        <div class="avail"><div class="avail-dot"></div><span style="color:var(--green)">Disponible</span></div>
       </div>
     </div>
     <div class="expert-card reveal reveal-delay-1">
       <div class="expert-head">
-        <div class="expert-av-lg av-lg-2">MD</div>
+        <div class="expert-av">MD</div>
         <div class="expert-meta">
           <div class="name">Marine Dupont</div>
-          <div class="role-tag">Consultant CEE</div>
+          <div class="role-tag">Consultant CEE · National</div>
         </div>
       </div>
-      <p class="expert-bio">Consultante CEE indépendante depuis 2019. Experte opérations standardisées et spécifiques. Taux de validation > 98%.</p>
-      <div class="expert-tags">
-        <span class="tag">CEE</span><span class="tag">Industrie</span><span class="tag">Tertiaire</span><span class="tag">Résidentiel</span>
-      </div>
+      <p class="expert-bio">Consultante CEE indépendante depuis 2019. Experte opérations standardisées et spécifiques. Taux de validation &gt; 98%.</p>
+      <div class="expert-tags"><span class="tag">CEE</span><span class="tag">Industrie</span><span class="tag">Tertiaire</span><span class="tag">Résidentiel</span></div>
       <div class="expert-footer">
-        <div><div class="rating">★ 5.0</div><div class="missions-count">67 missions</div></div>
-        <div class="avail"><div class="avail-dot"></div><span style="color:var(--emerald);font-size:11px">Disponible</span></div>
+        <div><div class="rating">★ 5.0</div><div class="missions-ct">67 missions</div></div>
+        <div class="avail"><div class="avail-dot"></div><span style="color:var(--green)">Disponible</span></div>
       </div>
     </div>
     <div class="expert-card reveal reveal-delay-2">
       <div class="expert-head">
-        <div class="expert-av-lg av-lg-3">CF</div>
+        <div class="expert-av">CF</div>
         <div class="expert-meta">
           <div class="name">Claire Fontaine</div>
-          <div class="role-tag">Bureau d'études thermique</div>
+          <div class="role-tag">Bureau d'études · Bretagne</div>
         </div>
       </div>
-      <p class="expert-bio">Ingénieure thermicienne, fondatrice d'un bureau d'études indépendant. Spécialisée bâtiments neufs et rénovation lourde.</p>
-      <div class="expert-tags">
-        <span class="tag">RE2020</span><span class="tag">RT2012</span><span class="tag">Rénovation</span><span class="tag">OPQIBI</span>
-      </div>
+      <p class="expert-bio">Ingénieure thermicienne, fondatrice d'un BET indépendant. Spécialisée bâtiments neufs et rénovation lourde.</p>
+      <div class="expert-tags"><span class="tag">RE2020</span><span class="tag">RT2012</span><span class="tag">Rénovation</span><span class="tag">OPQIBI</span></div>
       <div class="expert-footer">
-        <div><div class="rating">★ 4.9</div><div class="missions-count">54 missions</div></div>
-        <div class="avail"><div class="avail-dot"></div><span style="color:var(--emerald);font-size:11px">Disponible</span></div>
+        <div><div class="rating">★ 4.9</div><div class="missions-ct">54 missions</div></div>
+        <div class="avail"><div class="avail-dot"></div><span style="color:var(--green)">Disponible</span></div>
       </div>
     </div>
   </div>
-</section>
+</div>
 
 <!-- PRICING -->
-<section id="tarifs">
+<div class="section-wrap" id="tarifs">
   <div class="reveal" style="text-align:center">
-    <div class="section-tag" style="justify-content:center">Tarifs</div>
+    <div class="section-eyebrow" style="justify-content:center">Tarifs</div>
     <h2 class="section-title">Transparent,<br><em>sans surprise.</em></h2>
     <p class="section-sub" style="margin:0 auto">Payez une fois par brief. Aucun abonnement, aucun engagement.</p>
   </div>
   <div class="pricing-grid">
     <div class="price-card reveal">
       <div class="price-name">Essentiel</div>
-      <div class="price-amount"><span>€</span>49</div>
+      <div class="price-amount"><span class="cur">€</span>49</div>
       <div class="price-per">par brief</div>
       <ul class="price-features">
         <li><span class="check">✓</span>3 profils sélectionnés par IA</li>
         <li><span class="check">✓</span>Analyse sous 48h</li>
-        <li><span class="check">✓</span>Scores et justifications détaillées</li>
+        <li><span class="check">✓</span>Scores et justifications</li>
         <li><span class="check">✓</span>Contact direct par email</li>
         <li><span class="check">✓</span>Satisfait ou remboursé</li>
       </ul>
@@ -1070,27 +938,29 @@ footer {
     <div class="price-card featured reveal reveal-delay-1">
       <div class="price-popular">Recommandé</div>
       <div class="price-name">Premium</div>
-      <div class="price-amount"><span>€</span>99</div>
+      <div class="price-amount"><span class="cur">€</span>99</div>
       <div class="price-per">par brief</div>
       <ul class="price-features">
         <li><span class="check">✓</span>Tout l'Essentiel</li>
         <li><span class="check">✓</span>5 profils sélectionnés</li>
-        <li><span class="check">✓</span>Priorité de traitement (< 24h)</li>
+        <li><span class="check">✓</span>Priorité de traitement &lt; 24h</li>
         <li><span class="check">✓</span>Suivi personnalisé</li>
         <li><span class="check">✓</span>Brief multi-besoins possible</li>
       </ul>
       <a href="brief-wizard.html" class="btn-primary" style="display:block;text-align:center">Choisir Premium</a>
     </div>
   </div>
-</section>
+</div>
 
 <!-- CTA -->
-<div class="cta-section reveal">
-  <div class="section-tag" style="justify-content:center;position:relative">Commencer</div>
-  <h2 class="section-title" style="position:relative">Votre projet énergie<br><em>mérite le meilleur expert.</em></h2>
-  <p class="section-sub" style="margin:0 auto 36px;position:relative">Déposez votre brief maintenant. C'est gratuit, sans engagement.</p>
-  <div style="display:flex;gap:16px;justify-content:center;position:relative;flex-wrap:wrap">
-    <a href="brief-wizard.html" class="btn-primary" style="font-size:16px;padding:16px 40px">Déposer mon brief →</a>
+<div class="cta-wrap">
+  <div class="cta-inner reveal">
+    <div class="section-eyebrow" style="justify-content:center">Commencer</div>
+    <h2 class="section-title">Votre projet énergie<br><em>mérite le meilleur expert.</em></h2>
+    <p class="section-sub" style="margin:0 auto 36px">Déposez votre brief maintenant. C'est gratuit, sans engagement, et les profils arrivent sous 48h.</p>
+    <a href="brief-wizard.html" class="btn-primary" style="font-size:15px;padding:15px 40px">
+      Déposer mon brief gratuitement <span style="opacity:.6">→</span>
+    </a>
   </div>
 </div>
 
@@ -1109,19 +979,19 @@ footer {
 </div>
 
 <script>
-// ── CURSOR (desktop only) ──
+// ── CURSOR ──
 const cursor = document.getElementById('cursor');
 const ring   = document.getElementById('cursorRing');
-let mx=0, my=0, rx=0, ry=0;
+let mx=0,my=0,rx=0,ry=0;
 if (!window.matchMedia('(hover: none)').matches) {
   document.addEventListener('mousemove', e => {
     mx=e.clientX; my=e.clientY;
     cursor.style.left=mx+'px'; cursor.style.top=my+'px';
   });
-  (function animCursor(){
-    rx += (mx-rx)*0.1; ry += (my-ry)*0.1;
+  (function anim(){
+    rx+=(mx-rx)*.1; ry+=(my-ry)*.1;
     ring.style.left=rx+'px'; ring.style.top=ry+'px';
-    requestAnimationFrame(animCursor);
+    requestAnimationFrame(anim);
   })();
 }
 
@@ -1134,9 +1004,9 @@ function closeMobileMenu() {
   document.body.style.overflow = '';
 }
 hamburger.addEventListener('click', () => {
-  hamburger.classList.toggle('open');
-  mobileMenu.classList.toggle('open');
-  document.body.style.overflow = mobileMenu.classList.contains('open') ? 'hidden' : '';
+  const open = hamburger.classList.toggle('open');
+  mobileMenu.classList.toggle('open', open);
+  document.body.style.overflow = open ? 'hidden' : '';
 });
 
 // ── NAV SCROLL ──
@@ -1144,10 +1014,10 @@ const nav = document.getElementById('nav');
 window.addEventListener('scroll', () => nav.classList.toggle('scrolled', scrollY > 40), { passive: true });
 
 // ── SCROLL REVEAL ──
-const observer = new IntersectionObserver(entries => {
+const io = new IntersectionObserver(entries => {
   entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('visible'); });
-}, { threshold: 0.1 });
-document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+}, { threshold: 0.08 });
+document.querySelectorAll('.reveal').forEach(el => io.observe(el));
 
 // ── FEATURE TABS ──
 document.querySelectorAll('.feat-item').forEach(item => {
@@ -1157,38 +1027,29 @@ document.querySelectorAll('.feat-item').forEach(item => {
   });
 });
 
-// ── CARD GLOW ──
-document.querySelectorAll('.hiw-card').forEach(card => {
-  card.addEventListener('mousemove', e => {
-    const r = card.getBoundingClientRect();
-    card.style.setProperty('--mx', ((e.clientX-r.left)/r.width*100)+'%');
-    card.style.setProperty('--my', ((e.clientY-r.top)/r.height*100)+'%');
-  });
-});
-
-// ── COUNTER ANIMATION ──
-function animateCounter(el, target, suffix='', duration=1800) {
-  const start = Date.now();
+// ── COUNTER ──
+function counter(el, target, suffix, dur=1600) {
+  const t0 = Date.now();
   const fmt = n => n >= 1000 ? n.toLocaleString('fr') : n;
   const tick = () => {
-    const progress = Math.min((Date.now()-start)/duration, 1);
-    const ease = 1 - Math.pow(1-progress, 4);
-    el.textContent = fmt(Math.round(target*ease)) + suffix;
-    if (progress < 1) requestAnimationFrame(tick);
+    const p = Math.min((Date.now()-t0)/dur, 1);
+    const e = 1-Math.pow(1-p, 3);
+    el.textContent = fmt(Math.round(target*e)) + suffix;
+    if (p < 1) requestAnimationFrame(tick);
   };
   tick();
 }
-const statObserver = new IntersectionObserver(entries => {
+const cio = new IntersectionObserver(entries => {
   entries.forEach(e => {
-    if (e.isIntersecting && !e.target.dataset.counted) {
-      e.target.dataset.counted = '1';
-      const target  = parseInt(e.target.dataset.target);
-      const suffix  = e.target.dataset.suffix || '';
-      if (target) animateCounter(e.target, target, suffix);
+    if (e.isIntersecting && !e.target.dataset.done) {
+      e.target.dataset.done = '1';
+      const t = parseInt(e.target.dataset.target);
+      const s = e.target.dataset.suffix || '';
+      if (t) counter(e.target, t, s);
     }
   });
-}, { threshold: 0.5 });
-document.querySelectorAll('.stat-num[data-target]').forEach(el => statObserver.observe(el));
+}, { threshold: .5 });
+document.querySelectorAll('em[data-target]').forEach(el => cio.observe(el));
 </script>
 </body>
 </html>
