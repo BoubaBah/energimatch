@@ -96,10 +96,15 @@ nav {
 main { grid-column:2;padding:48px 0 80px;display:flex;flex-direction:column;align-items:stretch; }
 
 /* FORM STEPS */
-.form-step { display:none;animation:stepIn .35s ease; }
+.form-step { display:none; }
 .form-step.active { display:flex;flex-direction:column;gap:32px; }
+.form-step.slide-in    { animation:stepIn      .38s cubic-bezier(.4,0,.2,1) forwards; }
+.form-step.slide-in-back { animation:stepInBack .38s cubic-bezier(.4,0,.2,1) forwards; }
 
-@keyframes stepIn { from{opacity:0;transform:translateY(12px)} to{opacity:1;transform:translateY(0)} }
+@keyframes stepIn      { from{opacity:0;transform:translateX(32px)}  to{opacity:1;transform:translateX(0)} }
+@keyframes stepInBack  { from{opacity:0;transform:translateX(-32px)} to{opacity:1;transform:translateX(0)} }
+@keyframes stepOut     { from{opacity:1;transform:translateX(0)}  to{opacity:0;transform:translateX(-32px)} }
+@keyframes stepOutBack { from{opacity:1;transform:translateX(0)}  to{opacity:0;transform:translateX(32px)} }
 
 .step-heading { margin-bottom:8px; }
 .step-num { font-family:var(--font-mono);font-size:11px;color:var(--muted);letter-spacing:2px;text-transform:uppercase;margin-bottom:12px; }
@@ -312,45 +317,90 @@ input[type=range]::-webkit-slider-thumb:hover { transform:scale(1.2); }
 }
 
 @media(max-width:900px) {
-  .wrapper { grid-template-columns: 1fr; }
+  .wrapper {
+    grid-template-columns: 1fr;
+    grid-template-rows: auto auto 1fr;
+  }
   .side { display: none; }
-  main { grid-column: 1; padding: 28px 20px 80px; }
-  nav { padding: 14px 20px; }
-  .nav-logo { font-size: 17px; }
+
+  nav {
+    grid-column: 1; padding: 14px 20px;
+    display: flex; align-items: center; justify-content: space-between;
+  }
+  .nav-logo { font-size: 16px; }
   .secure { display: none; }
+  .nav-back { font-size: 12px; padding: 6px 12px; }
 
-  .step-bar { padding: 20px 20px 0; }
+  .step-bar {
+    grid-column: 1; padding: 20px 20px 0;
+  }
   .step-bar::before { display: none; }
+  /* Show compact dots only */
+  .step-dot-wrap { width: auto; min-width: 32px; }
   .step-label { display: none; }
-  .step-connector { width: 32px; margin: 0 -16px; }
+  .step-connector { width: 20px; margin: 0 -10px; flex-shrink: 0; }
 
-  .option-grid { grid-template-columns: 1fr 1fr; }
-  .option-grid.cols-3 { grid-template-columns: 1fr 1fr; }
-  .field-row { grid-template-columns: 1fr; }
-  .urgence-grid { grid-template-columns: 1fr 1fr 1fr; }
+  main {
+    grid-column: 1;
+    padding: 24px 20px 100px;
+    max-width: 100%;
+  }
 
-  .step-title { font-size: 26px; }
+  /* Options */
+  .option-grid { grid-template-columns: 1fr 1fr; gap: 8px; }
+  .option-grid.cols-3 { grid-template-columns: 1fr 1fr 1fr; }
+  .opt { padding: 14px 12px; gap: 6px; }
+  .opt-desc { display: none; } /* hide desc on mobile to save space */
+  .opt-icon { font-size: 22px; }
+  .opt-label { font-size: 13px; }
 
-  .btn-group { flex-direction: column-reverse; gap: 8px; }
-  .btn-primary, .btn-secondary { width: 100%; text-align: center; }
+  .field-row { grid-template-columns: 1fr; gap: 16px; }
+  .urgence-grid { grid-template-columns: repeat(3,1fr); gap: 8px; }
+  .urg-opt { padding: 12px 8px; }
+  .urg-opt .urg-sub { display: none; }
+
+  .step-title { font-size: 26px; letter-spacing: -.5px; }
+  .step-num { font-size: 10px; }
+
+  /* Buttons — primary on top, secondary below */
+  .btn-group { flex-direction: column; gap: 10px; }
+  .btn-primary { width: 100%; padding: 16px; font-size: 15px; }
+  .btn-secondary { width: 100%; padding: 14px; text-align: center; }
+
+  /* Slider */
+  input[type=range] { height: 4px; }
+  input[type=range]::-webkit-slider-thumb { width: 26px; height: 26px; }
+  input[type=range]::-moz-range-thumb { width: 26px; height: 26px; }
+  .slider-labels span { font-size: 9px; }
+
+  .trust-strip { flex-wrap: wrap; gap: 10px; }
+  .trust-item { font-size: 11px; }
+
+  /* Summary */
+  .summary-card { font-size: 13px; }
+  .price-big { font-size: 32px; }
 
   .vp-chip { display: none; }
   .floating-tags { display: none; }
 
-  /* Larger touch target for slider */
-  input[type=range] { height: 4px; }
-  input[type=range]::-webkit-slider-thumb { width: 24px; height: 24px; }
-
-  .trust-strip { gap: 12px; flex-wrap: wrap; }
+  /* Progress bar */
+  #progressFill { transition: width .5s cubic-bezier(.4,0,.2,1); }
 }
 
 @media(max-width:480px) {
-  main { padding: 20px 16px 80px; }
-  .option-grid { grid-template-columns: 1fr; }
-  .urgence-grid { grid-template-columns: 1fr 1fr; }
+  main { padding: 20px 16px 100px; }
+  nav { padding: 12px 16px; }
+
+  .option-grid { grid-template-columns: 1fr 1fr; }
+  .option-grid.cols-3 { grid-template-columns: 1fr 1fr; }
+  .urgence-grid { grid-template-columns: 1fr 1fr 1fr; }
+
   .step-title { font-size: 22px; }
   .budget-display { font-size: 22px; }
-  nav { padding: 12px 16px; }
+  .step-connector { width: 14px; margin: 0 -7px; }
+
+  .opt-icon { font-size: 18px; }
+  .opt-label { font-size: 12px; }
 }
 </style>
 </head>
@@ -424,47 +474,47 @@ input[type=range]::-webkit-slider-thumb:hover { transform:scale(1.2); }
         <div class="opt-check">✓</div>
         <div class="opt-icon">⚡</div>
         <div class="opt-label">Courtier énergie</div>
-        <div class="opt-desc">Négociation contrats gaz & électricité</div>
+        <div class="opt-desc">Négociation contrats gaz & élec</div>
       </label>
       <label class="opt" onclick="select(this,'type')">
         <input type="radio" name="type" value="auditeur_energetique">
         <div class="opt-check">✓</div>
         <div class="opt-icon">🔍</div>
-        <div class="opt-label">Auditeur énergétique</div>
-        <div class="opt-desc">Diagnostic et bilan de consommation</div>
+        <div class="opt-label">Auditeur</div>
+        <div class="opt-desc">Diagnostic consommation</div>
       </label>
       <label class="opt" onclick="select(this,'type')">
         <input type="radio" name="type" value="installateur_photovoltaique">
         <div class="opt-check">✓</div>
         <div class="opt-icon">☀️</div>
         <div class="opt-label">Installateur PV</div>
-        <div class="opt-desc">Solaire et autoconsommation</div>
+        <div class="opt-desc">Solaire & autoconsommation</div>
       </label>
       <label class="opt" onclick="select(this,'type')">
         <input type="radio" name="type" value="consultant_cee">
         <div class="opt-check">✓</div>
         <div class="opt-icon">📄</div>
         <div class="opt-label">Consultant CEE</div>
-        <div class="opt-desc">Certificats d'économie d'énergie</div>
+        <div class="opt-desc">Certificats d'économies</div>
       </label>
       <label class="opt" onclick="select(this,'type')">
         <input type="radio" name="type" value="bureau_etudes_thermique">
         <div class="opt-check">✓</div>
         <div class="opt-icon">🏗️</div>
         <div class="opt-label">Bureau d'études</div>
-        <div class="opt-desc">Études thermiques RT2012 / RE2020</div>
+        <div class="opt-desc">Thermique RT2012 / RE2020</div>
       </label>
       <label class="opt" onclick="select(this,'type')">
         <input type="radio" name="type" value="autre">
         <div class="opt-check">✓</div>
         <div class="opt-icon">🔧</div>
-        <div class="opt-label">Autre expertise</div>
-        <div class="opt-desc">Précisez dans la description</div>
+        <div class="opt-label">Autre</div>
+        <div class="opt-desc">Précisez ci-après</div>
       </label>
     </div>
 
-    <div class="btn-group">
-      <button class="btn-primary" onclick="nextStep()">Continuer →</button>
+    <div style="text-align:center;font-size:12px;color:var(--muted);font-family:var(--font-mono);letter-spacing:.5px;margin-top:-8px">
+      ↑ Sélectionnez une option pour continuer
     </div>
 
     <div class="trust-strip">
@@ -771,99 +821,151 @@ if (!window.matchMedia('(hover: none)').matches) {
   (function a(){rx+=(mx-rx)*.1;ry+=(my-ry)*.1;curR.style.left=rx+'px';curR.style.top=ry+'px';requestAnimationFrame(a);})();
 }
 
-// STEP LOGIC
-let currentStep=0;
-const totalSteps=5;
-const budgetLabels=['Sur devis','Moins de 5 000 €','5 000 – 20 000 €','20 000 – 50 000 €','50 000 – 100 000 €','Plus de 100 000 €'];
-const budgetSubLabels=['— pas de contrainte fixe','/ an ou par mission','/ an ou par mission','/ an ou par mission','/ an ou par mission','/ an ou par mission'];
+// ── STEP LOGIC ──
+let currentStep = 0;
+const totalSteps = 5;
+const budgetLabels    = ['Sur devis','Moins de 5 000 €','5 000 – 20 000 €','20 000 – 50 000 €','50 000 – 100 000 €','Plus de 100 000 €'];
+const budgetSubLabels = ['— pas de contrainte fixe','/ an ou par mission','/ an ou par mission','/ an ou par mission','/ an ou par mission','/ an ou par mission'];
 
-function goTo(n){
-  document.getElementById('step-'+currentStep).classList.remove('active');
-  // Deactivate success step
-  document.getElementById('step-success').classList.remove('active');
-  currentStep=n;
-  const el=document.getElementById('step-'+n);
-  if(el) el.classList.add('active');
-  updateStepBar();
-  window.scrollTo({top:0,behavior:'smooth'});
+function scrollTop() {
+  const main = document.querySelector('main');
+  if (main) main.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  window.scrollTo({ top: 0, behavior: 'smooth' });
 }
 
-function nextStep(){
-  if(currentStep<totalSteps-1) goTo(currentStep+1);
+function goTo(n, direction) {
+  const prev = document.getElementById('step-' + currentStep);
+  const dir  = direction !== undefined ? direction : (n > currentStep ? 1 : -1);
+
+  if (prev) {
+    prev.classList.remove('active', 'slide-in', 'slide-in-back');
+    prev.classList.add('active'); // keep visible during exit
+    // Brief exit flash then hide
+    requestAnimationFrame(() => {
+      prev.classList.remove('active');
+    });
+  }
+  document.getElementById('step-success').classList.remove('active');
+
+  currentStep = n;
+  const next = document.getElementById('step-' + n);
+  if (next) {
+    next.classList.remove('slide-in', 'slide-in-back');
+    next.classList.add('active');
+    // Force reflow then add animation class
+    void next.offsetWidth;
+    next.classList.add(dir >= 0 ? 'slide-in' : 'slide-in-back');
+  }
+
+  updateStepBar();
+  scrollTop();
+}
+
+function nextStep() {
+  if (currentStep < totalSteps - 1) goTo(currentStep + 1, 1);
   else showSuccess();
 }
-function prevStep(){ if(currentStep>0) goTo(currentStep-1); }
+function prevStep() {
+  if (currentStep > 0) goTo(currentStep - 1, -1);
+}
 
-function updateStepBar(){
-  for(let i=0;i<totalSteps;i++){
-    const dot=document.getElementById('dot-'+i);
-    const lbl=document.getElementById('lbl-'+i);
-    if(!dot) continue;
-    dot.classList.remove('active','done');
-    lbl.classList.remove('active');
-    if(i<currentStep){ dot.classList.add('done'); dot.textContent='✓'; }
-    else if(i===currentStep){ dot.classList.add('active'); dot.textContent='0'+(i+1); lbl.classList.add('active'); }
-    else { dot.textContent='0'+(i+1); }
-    const conn=document.getElementById('conn-'+i);
-    if(conn){ conn.classList.remove('done'); if(i<currentStep) conn.classList.add('done'); }
+function updateStepBar() {
+  for (let i = 0; i < totalSteps; i++) {
+    const dot  = document.getElementById('dot-' + i);
+    const lbl  = document.getElementById('lbl-' + i);
+    const conn = document.getElementById('conn-' + i);
+    if (!dot) continue;
+    dot.classList.remove('active', 'done');
+    if (lbl) lbl.classList.remove('active');
+    if (i < currentStep)       { dot.classList.add('done'); dot.textContent = '✓'; }
+    else if (i === currentStep) { dot.classList.add('active'); dot.textContent = '0' + (i + 1); if (lbl) lbl.classList.add('active'); }
+    else                        { dot.textContent = '0' + (i + 1); }
+    if (conn) { conn.classList.toggle('done', i < currentStep); }
   }
-  document.getElementById('progressFill').style.width=((currentStep+1)/totalSteps*100)+'%';
+  document.getElementById('progressFill').style.width = ((currentStep + 1) / totalSteps * 100) + '%';
 }
 
-function select(el,name){
-  document.querySelectorAll('[name='+name+']').forEach(i=>i.closest('.opt').classList.remove('selected'));
+// ── SELECTION HELPERS ──
+function select(el, name) {
+  document.querySelectorAll('[name=' + name + ']').forEach(i => i.closest('.opt').classList.remove('selected'));
   el.classList.add('selected');
+
+  // Step 0: auto-advance after visual feedback
+  if (name === 'type') {
+    el.style.transition = 'border-color .15s, background .15s, transform .15s';
+    el.style.transform = 'scale(0.97)';
+    setTimeout(() => { el.style.transform = ''; }, 150);
+    setTimeout(() => nextStep(), 420);
+  }
 }
 
-function selectUrg(el,val){
-  document.querySelectorAll('.urg-opt').forEach(u=>u.classList.remove('selected'));
+function selectUrg(el, val) {
+  document.querySelectorAll('.urg-opt').forEach(u => u.classList.remove('selected'));
   el.classList.add('selected');
-  el.dataset.val=val;
+  el.dataset.val = val;
+
+  // Auto-advance after urgence selection
+  setTimeout(() => nextStep(), 420);
 }
 
-// Budget slider
-const slider=document.getElementById('budgetSlider');
-const display=document.getElementById('budgetDisplay');
-if(slider) slider.addEventListener('input',()=>{
-  const v=parseInt(slider.value);
-  display.innerHTML=budgetLabels[v]+'<span>'+budgetSubLabels[v]+'</span>';
+// ── BUDGET SLIDER ──
+const slider  = document.getElementById('budgetSlider');
+const display = document.getElementById('budgetDisplay');
+if (slider) slider.addEventListener('input', () => {
+  const v = parseInt(slider.value);
+  display.innerHTML = budgetLabels[v] + '<span>' + budgetSubLabels[v] + '</span>';
+  // Animate thumb
+  slider.style.setProperty('--val', v);
 });
 
-function showSuccess(){
-  // Fill summary
-  const typeEl=document.querySelector('[name=type]:checked');
-  const perEl=document.querySelector('[name=perimetre]:checked');
-  const planEl=document.querySelector('[name=plan]:checked');
-  const urgEl=document.querySelector('.urg-opt.selected');
-  const typeLabels={'courtier_energie':'Courtier énergie','auditeur_energetique':'Auditeur énergétique','installateur_photovoltaique':'Installateur PV','consultant_cee':'Consultant CEE','bureau_etudes_thermique':'Bureau d'études','autre':'Autre'};
-  const perLabels={'site_unique':'Site unique','multi_sites_2_10':'2–10 sites','multi_sites_10+':'10+ sites'};
-  document.getElementById('sum-type').textContent=typeEl?typeLabels[typeEl.value]||typeEl.value:'Non précisé';
-  document.getElementById('sum-zone').textContent=document.getElementById('zone').value||'Non précisé';
-  document.getElementById('sum-perimetre').textContent=perEl?perLabels[perEl.value]||perEl.value:'Non précisé';
-  document.getElementById('sum-budget').textContent=budgetLabels[parseInt(slider.value)];
-  document.getElementById('sum-urgence').textContent=urgEl?urgEl.querySelector('.urg-label').textContent:'Non précisé';
-  document.getElementById('sum-nom').textContent=document.getElementById('nom').value||'—';
-  document.getElementById('sum-email').textContent=document.getElementById('email').value||'—';
-  document.getElementById('sum-entreprise').textContent=document.getElementById('entreprise').value||'—';
-  document.getElementById('sum-plan').textContent=planEl?planEl.value==='premium'?'Premium':'Essentiel':'Essentiel';
-  document.getElementById('sum-price').textContent=planEl&&planEl.value==='premium'?'99':'49';
+// ── SUMMARY + SUBMIT ──
+function showSuccess() {
+  const typeEl = document.querySelector('[name=type]:checked');
+  const perEl  = document.querySelector('[name=perimetre]:checked');
+  const planEl = document.querySelector('[name=plan]:checked');
+  const urgEl  = document.querySelector('.urg-opt.selected');
+  const typeLabels = {
+    'courtier_energie': 'Courtier énergie',
+    'auditeur_energetique': 'Auditeur énergétique',
+    'installateur_photovoltaique': 'Installateur PV',
+    'consultant_cee': 'Consultant CEE',
+    'bureau_etudes_thermique': "Bureau d'études",
+    'autre': 'Autre expertise'
+  };
+  const perLabels = { 'site_unique': 'Site unique', 'multi_sites_2_10': '2–10 sites', 'multi_sites_10+': '10+ sites' };
 
-  goTo(4);
+  document.getElementById('sum-type').textContent      = typeEl ? typeLabels[typeEl.value] || typeEl.value : 'Non précisé';
+  document.getElementById('sum-zone').textContent      = document.getElementById('zone').value || 'Non précisé';
+  document.getElementById('sum-perimetre').textContent = perEl  ? perLabels[perEl.value] || perEl.value   : 'Non précisé';
+  document.getElementById('sum-budget').textContent    = budgetLabels[parseInt(slider.value)];
+  document.getElementById('sum-urgence').textContent   = urgEl  ? urgEl.querySelector('.urg-label').textContent : 'Non précisé';
+  document.getElementById('sum-nom').textContent       = document.getElementById('nom').value       || '—';
+  document.getElementById('sum-email').textContent     = document.getElementById('email').value     || '—';
+  document.getElementById('sum-entreprise').textContent = document.getElementById('entreprise').value || '—';
+  const isPremium = planEl && planEl.value === 'premium';
+  document.getElementById('sum-plan').textContent  = isPremium ? 'Premium' : 'Essentiel';
+  document.getElementById('sum-price').textContent = isPremium ? '99' : '49';
+
+  goTo(4, 1);
 }
 
-function submitBrief(){
-  document.getElementById('step-4').classList.remove('active');
-  document.getElementById('step-success').classList.add('active');
-  document.getElementById('briefNum').textContent=Math.floor(2800+Math.random()*200);
-  document.getElementById('progressFill').style.width='100%';
-  // Mark all dots done
-  for(let i=0;i<totalSteps;i++){
-    const dot=document.getElementById('dot-'+i);
-    if(dot){dot.classList.remove('active');dot.classList.add('done');dot.textContent='✓';}
-    const conn=document.getElementById('conn-'+i);
-    if(conn) conn.classList.add('done');
+function submitBrief() {
+  const s4 = document.getElementById('step-4');
+  s4.classList.remove('active', 'slide-in', 'slide-in-back');
+  const ss = document.getElementById('step-success');
+  ss.classList.add('active');
+  void ss.offsetWidth;
+  ss.classList.add('slide-in');
+
+  document.getElementById('briefNum').textContent = Math.floor(2800 + Math.random() * 200);
+  document.getElementById('progressFill').style.width = '100%';
+  for (let i = 0; i < totalSteps; i++) {
+    const dot = document.getElementById('dot-' + i);
+    if (dot) { dot.classList.remove('active'); dot.classList.add('done'); dot.textContent = '✓'; }
+    const conn = document.getElementById('conn-' + i);
+    if (conn) conn.classList.add('done');
   }
-  window.scrollTo({top:0,behavior:'smooth'});
+  scrollTop();
 }
 </script>
 </body>
