@@ -1,0 +1,705 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Dashboard — EnergyMatch Admin</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #09090b;
+  --bg2: #0c0c0f;
+  --surface: #111114;
+  --surface2: #17171b;
+  --surface3: #1e1e23;
+  --border: rgba(255,255,255,0.06);
+  --border2: rgba(255,255,255,0.1);
+  --blue: #3b82f6;
+  --blue-dim: rgba(59,130,246,0.1);
+  --blue-border: rgba(59,130,246,0.25);
+  --green: #22c55e;
+  --amber: #f59e0b;
+  --red: #ef4444;
+  --purple: #a78bfa;
+  --text: #e4e4e7;
+  --text2: #a1a1aa;
+  --muted: #52525b;
+  --font-serif: 'Instrument Serif', Georgia, serif;
+  --font-sans: 'DM Sans', sans-serif;
+  --font-mono: 'DM Mono', monospace;
+  --sidebar-w: 220px;
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; }
+
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--font-sans);
+  min-height: 100vh;
+  display: grid;
+  grid-template-columns: var(--sidebar-w) 1fr;
+  cursor: none;
+}
+
+/* CURSOR */
+.cur { position:fixed;width:5px;height:5px;background:#fff;border-radius:50%;pointer-events:none;z-index:9999;transform:translate(-50%,-50%);mix-blend-mode:difference; }
+.cur-r { position:fixed;width:24px;height:24px;border:1px solid rgba(255,255,255,0.15);border-radius:50%;pointer-events:none;z-index:9998;transform:translate(-50%,-50%);transition:transform .1s ease-out; }
+
+/* GRAIN */
+body::after { content:'';position:fixed;inset:0;z-index:1;pointer-events:none;opacity:.02;background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 512 512' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E"); }
+
+/* SIDEBAR */
+.sidebar {
+  position: fixed; top: 0; left: 0; bottom: 0; width: var(--sidebar-w);
+  background: var(--bg2); border-right: 1px solid var(--border);
+  display: flex; flex-direction: column; z-index: 50;
+}
+
+.sb-logo {
+  padding: 24px 20px; border-bottom: 1px solid var(--border);
+  display: flex; align-items: center; gap: 10px;
+}
+.sb-logo-mark {
+  width: 28px; height: 28px; border-radius: 7px;
+  background: var(--surface3); border: 1px solid var(--border2);
+  display: grid; place-items: center; font-size: 13px;
+}
+.sb-logo-text { font-family: var(--font-serif); font-size: 16px; font-style: italic; }
+.sb-logo-badge { margin-left: auto; font-family: var(--font-mono); font-size: 9px; color: var(--muted); letter-spacing: 1px; border: 1px solid var(--border); padding: 2px 6px; border-radius: 4px; }
+
+.sb-section { padding: 20px 12px 8px; }
+.sb-section-label { font-family: var(--font-mono); font-size: 9px; color: var(--muted); letter-spacing: 2px; text-transform: uppercase; padding: 0 8px; margin-bottom: 4px; }
+
+.sb-link {
+  display: flex; align-items: center; gap: 10px;
+  padding: 9px 10px; border-radius: 8px; color: var(--text2); text-decoration: none;
+  font-size: 13px; font-weight: 400; transition: all .2s; cursor: pointer;
+  margin-bottom: 1px; border: 1px solid transparent;
+}
+.sb-link:hover { background: var(--surface); color: var(--text); }
+.sb-link.active { background: var(--surface2); color: var(--text); border-color: var(--border); }
+.sb-icon { font-size: 14px; width: 20px; text-align: center; opacity: .7; }
+.sb-count { margin-left: auto; font-family: var(--font-mono); font-size: 10px; background: var(--surface3); color: var(--text2); padding: 2px 7px; border-radius: 100px; }
+.sb-count.alert { background: rgba(239,68,68,.15); color: var(--red); }
+
+.sb-bottom {
+  margin-top: auto; padding: 16px 12px; border-top: 1px solid var(--border);
+}
+.sb-user { display: flex; align-items: center; gap: 10px; padding: 8px 10px; border-radius: 8px; }
+.sb-av { width: 28px; height: 28px; border-radius: 7px; background: var(--surface3); border: 1px solid var(--border2); display: grid; place-items: center; font-size: 10px; font-weight: 600; font-family: var(--font-mono); color: var(--text2); }
+.sb-name { font-size: 12px; font-weight: 500; }
+.sb-role { font-size: 10px; color: var(--muted); }
+.sb-status { margin-left: auto; width: 6px; height: 6px; border-radius: 50%; background: var(--green); }
+
+/* MAIN */
+.main { margin-left: var(--sidebar-w); min-height: 100vh; position: relative; z-index: 2; }
+
+/* TOPBAR */
+.topbar {
+  position: sticky; top: 0; z-index: 40;
+  background: rgba(9,9,11,.9); backdrop-filter: blur(20px);
+  border-bottom: 1px solid var(--border);
+  padding: 0 32px; height: 56px;
+  display: flex; align-items: center; justify-content: space-between; gap: 16px;
+}
+.tb-title { font-family: var(--font-serif); font-size: 18px; font-style: italic; }
+.tb-right { display: flex; align-items: center; gap: 12px; }
+.tb-search {
+  display: flex; align-items: center; gap: 8px;
+  background: var(--surface); border: 1px solid var(--border);
+  border-radius: 8px; padding: 7px 12px; font-size: 13px; color: var(--muted);
+  width: 220px; transition: all .2s;
+}
+.tb-search:focus-within { border-color: var(--border2); color: var(--text); }
+.tb-search input { background: none; border: none; outline: none; color: inherit; font-size: 13px; font-family: var(--font-sans); width: 100%; }
+.tb-btn {
+  display: flex; align-items: center; gap: 6px;
+  background: var(--text); color: var(--bg); border: none;
+  border-radius: 8px; padding: 8px 16px; font-size: 12px; font-weight: 500;
+  font-family: var(--font-sans); cursor: pointer; transition: all .2s; white-space: nowrap;
+}
+.tb-btn:hover { opacity: .9; }
+.tb-notif {
+  width: 32px; height: 32px; border-radius: 8px;
+  border: 1px solid var(--border); background: var(--surface);
+  display: grid; place-items: center; cursor: pointer; transition: all .2s;
+  position: relative; font-size: 14px;
+}
+.tb-notif:hover { border-color: var(--border2); }
+.notif-dot { position: absolute; top: 6px; right: 6px; width: 5px; height: 5px; border-radius: 50%; background: var(--red); border: 1px solid var(--bg); }
+
+/* CONTENT */
+.content { padding: 28px 32px; }
+
+/* STATS ROW */
+.stats-row { display: grid; grid-template-columns: repeat(4,1fr); gap: 12px; margin-bottom: 28px; }
+
+.stat-card {
+  background: var(--surface); border: 1px solid var(--border);
+  border-radius: 12px; padding: 20px 20px 16px;
+  position: relative; overflow: hidden; transition: border-color .2s;
+}
+.stat-card:hover { border-color: var(--border2); }
+.stat-card::before { content:'';position:absolute;top:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,var(--border2),transparent);opacity:0;transition:opacity .3s; }
+.stat-card:hover::before { opacity:1; }
+.sc-label { font-family: var(--font-mono); font-size: 10px; color: var(--muted); letter-spacing: 1px; text-transform: uppercase; margin-bottom: 10px; }
+.sc-val { font-family: var(--font-mono); font-size: 28px; font-weight: 500; letter-spacing: -1px; line-height: 1; margin-bottom: 8px; }
+.sc-delta { font-size: 11px; display: flex; align-items: center; gap: 4px; }
+.delta-up { color: var(--green); }
+.delta-down { color: var(--red); }
+.delta-neutral { color: var(--muted); }
+
+/* PIPELINE / KANBAN */
+.section-header {
+  display: flex; align-items: center; justify-content: space-between;
+  margin-bottom: 16px;
+}
+.section-title { font-family: var(--font-serif); font-size: 20px; font-style: italic; }
+.view-toggle { display: flex; gap: 2px; background: var(--surface); border: 1px solid var(--border); border-radius: 8px; padding: 3px; }
+.vt-btn { padding: 5px 12px; border-radius: 6px; font-size: 12px; cursor: pointer; color: var(--muted); border: none; background: none; font-family: var(--font-sans); transition: all .2s; }
+.vt-btn.active { background: var(--surface2); color: var(--text); }
+
+/* TABLE VIEW */
+.brief-table { width: 100%; border-collapse: collapse; }
+.brief-table th {
+  text-align: left; font-family: var(--font-mono); font-size: 10px;
+  color: var(--muted); letter-spacing: 1px; text-transform: uppercase;
+  padding: 10px 16px; border-bottom: 1px solid var(--border);
+  font-weight: 400; background: var(--surface);
+}
+.brief-table th:first-child { border-radius: 8px 0 0 0; }
+.brief-table th:last-child { border-radius: 0 8px 0 0; }
+.brief-table td {
+  padding: 14px 16px; border-bottom: 1px solid var(--border);
+  font-size: 13px; vertical-align: middle;
+}
+.brief-table tr:last-child td { border-bottom: none; }
+.brief-table tbody tr { transition: background .15s; cursor: pointer; }
+.brief-table tbody tr:hover { background: var(--surface); }
+.brief-table tbody tr:hover td:first-child { border-left: 1px solid var(--border2); }
+
+.brief-id { font-family: var(--font-mono); font-size: 11px; color: var(--muted); }
+.client-name { font-weight: 500; font-size: 13px; }
+.client-co { font-size: 11px; color: var(--muted); margin-top: 2px; }
+
+.type-badge {
+  display: inline-flex; align-items: center; gap: 5px;
+  font-size: 11px; padding: 4px 10px; border-radius: 6px;
+  background: var(--surface2); color: var(--text2); border: 1px solid var(--border);
+  white-space: nowrap;
+}
+
+.status-pill {
+  display: inline-flex; align-items: center; gap: 5px;
+  font-size: 11px; padding: 4px 10px; border-radius: 100px;
+  font-family: var(--font-mono); font-weight: 400; white-space: nowrap;
+}
+.status-pill .s-dot { width: 5px; height: 5px; border-radius: 50%; }
+
+.s-nouveau { background: rgba(161,161,170,.08); color: #a1a1aa; border: 1px solid rgba(161,161,170,.15); }
+.s-nouveau .s-dot { background: #a1a1aa; }
+.s-en_analyse { background: rgba(245,158,11,.08); color: #f59e0b; border: 1px solid rgba(245,158,11,.2); }
+.s-en_analyse .s-dot { background: #f59e0b; animation: blink 1s infinite; }
+.s-profils_envoyes { background: rgba(59,130,246,.08); color: var(--blue); border: 1px solid var(--blue-border); }
+.s-profils_envoyes .s-dot { background: var(--blue); }
+.s-en_contact { background: rgba(167,139,250,.08); color: var(--purple); border: 1px solid rgba(167,139,250,.2); }
+.s-en_contact .s-dot { background: var(--purple); }
+.s-cloture_succes { background: rgba(34,197,94,.08); color: var(--green); border: 1px solid rgba(34,197,94,.2); }
+.s-cloture_succes .s-dot { background: var(--green); }
+.s-cloture_echec { background: rgba(239,68,68,.08); color: var(--red); border: 1px solid rgba(239,68,68,.2); }
+.s-cloture_echec .s-dot { background: var(--red); }
+
+@keyframes blink { 0%,100%{opacity:1} 50%{opacity:.3} }
+
+.plan-badge {
+  font-family: var(--font-mono); font-size: 10px; padding: 3px 8px;
+  border-radius: 4px; letter-spacing: .5px; text-transform: uppercase;
+}
+.plan-premium { background: rgba(245,158,11,.1); color: var(--amber); border: 1px solid rgba(245,158,11,.2); }
+.plan-essentiel { background: var(--surface2); color: var(--muted); border: 1px solid var(--border); }
+
+.time-ago { font-family: var(--font-mono); font-size: 11px; color: var(--muted); }
+
+.row-actions { display: flex; gap: 4px; opacity: 0; transition: opacity .2s; }
+tr:hover .row-actions { opacity: 1; }
+.ra-btn {
+  padding: 4px 10px; border-radius: 6px; font-size: 11px;
+  cursor: pointer; border: 1px solid var(--border); background: var(--surface2);
+  color: var(--text2); transition: all .15s; font-family: var(--font-sans);
+}
+.ra-btn:hover { border-color: var(--border2); color: var(--text); }
+.ra-btn.primary { border-color: var(--blue-border); color: var(--blue); background: var(--blue-dim); }
+
+/* DETAIL PANEL */
+.detail-panel {
+  position: fixed; top: 0; right: 0; bottom: 0; width: 420px;
+  background: var(--bg2); border-left: 1px solid var(--border);
+  z-index: 200; transform: translateX(100%); transition: transform .35s cubic-bezier(.4,0,.2,1);
+  display: flex; flex-direction: column; overflow: hidden;
+}
+.detail-panel.open { transform: translateX(0); }
+.detail-overlay {
+  position: fixed; inset: 0; z-index: 199; background: rgba(0,0,0,.5);
+  opacity: 0; pointer-events: none; transition: opacity .35s; backdrop-filter: blur(4px);
+}
+.detail-overlay.open { opacity: 1; pointer-events: all; }
+
+.dp-header {
+  padding: 20px 24px; border-bottom: 1px solid var(--border);
+  display: flex; align-items: flex-start; justify-content: space-between; gap: 12px;
+}
+.dp-close {
+  width: 28px; height: 28px; border-radius: 7px; background: var(--surface);
+  border: 1px solid var(--border); display: grid; place-items: center;
+  cursor: pointer; font-size: 14px; color: var(--muted); transition: all .2s; flex-shrink: 0;
+}
+.dp-close:hover { color: var(--text); border-color: var(--border2); }
+.dp-brief-id { font-family: var(--font-mono); font-size: 10px; color: var(--muted); letter-spacing: 1px; margin-bottom: 6px; }
+.dp-client { font-size: 16px; font-weight: 500; }
+.dp-company { font-size: 12px; color: var(--text2); margin-top: 2px; }
+
+.dp-body { flex: 1; overflow-y: auto; padding: 20px 24px; }
+.dp-body::-webkit-scrollbar { width: 3px; }
+.dp-body::-webkit-scrollbar-thumb { background: var(--border2); border-radius: 2px; }
+
+.dp-section { margin-bottom: 24px; }
+.dp-section-title { font-family: var(--font-mono); font-size: 9px; color: var(--muted); letter-spacing: 2px; text-transform: uppercase; margin-bottom: 12px; padding-bottom: 8px; border-bottom: 1px solid var(--border); }
+
+.dp-row { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 10px; gap: 16px; }
+.dp-row:last-child { margin-bottom: 0; }
+.dp-key { font-size: 12px; color: var(--muted); flex-shrink: 0; }
+.dp-val { font-size: 12px; text-align: right; }
+
+.dp-desc { font-size: 13px; color: var(--text2); line-height: 1.6; background: var(--surface); border: 1px solid var(--border); border-radius: 8px; padding: 12px 14px; font-weight: 300; }
+
+.match-card {
+  background: var(--surface); border: 1px solid var(--border);
+  border-radius: 10px; padding: 14px; margin-bottom: 8px; transition: border-color .2s;
+}
+.match-card:last-child { margin-bottom: 0; }
+.match-card:hover { border-color: var(--border2); }
+.mc-head { display: flex; align-items: center; gap: 10px; margin-bottom: 10px; }
+.mc-av { width: 32px; height: 32px; border-radius: 8px; display: grid; place-items: center; font-size: 11px; font-weight: 600; font-family: var(--font-mono); flex-shrink: 0; }
+.mc-name { font-size: 13px; font-weight: 500; }
+.mc-role { font-size: 11px; color: var(--muted); }
+.mc-score { margin-left: auto; font-family: var(--font-mono); font-size: 16px; font-weight: 500; }
+.mc-score.high { color: var(--green); }
+.mc-score.mid { color: var(--amber); }
+.mc-just { font-size: 12px; color: var(--text2); line-height: 1.5; font-weight: 300; }
+.mc-rank { font-family: var(--font-mono); font-size: 9px; color: var(--muted); margin-bottom: 4px; }
+
+.dp-actions { padding: 16px 24px; border-top: 1px solid var(--border); display: flex; gap: 8px; }
+.dp-action { flex: 1; padding: 10px; border-radius: 8px; font-size: 12px; cursor: pointer; text-align: center; font-family: var(--font-sans); transition: all .2s; }
+.dp-action.prim { background: var(--text); color: var(--bg); border: none; font-weight: 500; }
+.dp-action.prim:hover { opacity: .9; }
+.dp-action.sec { background: none; color: var(--text2); border: 1px solid var(--border); }
+.dp-action.sec:hover { border-color: var(--border2); color: var(--text); }
+.dp-action.danger { background: none; color: var(--red); border: 1px solid rgba(239,68,68,.2); }
+.dp-action.danger:hover { background: rgba(239,68,68,.08); }
+
+/* STATUS SELECT */
+.status-select { display: flex; flex-wrap: wrap; gap: 6px; }
+.ss-opt { padding: 5px 12px; border-radius: 100px; font-size: 11px; cursor: pointer; border: 1px solid var(--border); color: var(--muted); transition: all .2s; font-family: var(--font-mono); }
+.ss-opt:hover { border-color: var(--border2); color: var(--text); }
+.ss-opt.selected { border-color: var(--blue-border); color: var(--blue); background: var(--blue-dim); }
+
+/* BOTTOM CHARTS */
+.charts-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 12px; }
+
+.chart-card { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 20px; }
+.chart-title { font-family: var(--font-mono); font-size: 10px; color: var(--muted); letter-spacing: 1px; text-transform: uppercase; margin-bottom: 16px; }
+
+.bar-chart { display: flex; align-items: flex-end; gap: 6px; height: 64px; }
+.bar { flex: 1; border-radius: 3px 3px 0 0; transition: opacity .2s; position: relative; cursor: default; }
+.bar:hover { opacity: .7; }
+.bar-label { position: absolute; bottom: -18px; left: 50%; transform: translateX(-50%); font-family: var(--font-mono); font-size: 9px; color: var(--muted); white-space: nowrap; }
+.bar-chart-wrap { padding-bottom: 22px; }
+
+.donut-row { display: flex; align-items: center; gap: 20px; }
+.donut-svg { flex-shrink: 0; }
+.donut-legend { display: flex; flex-direction: column; gap: 6px; }
+.dl-item { display: flex; align-items: center; gap: 8px; font-size: 12px; }
+.dl-dot { width: 8px; height: 8px; border-radius: 2px; flex-shrink: 0; }
+.dl-label { color: var(--text2); }
+.dl-val { margin-left: auto; font-family: var(--font-mono); font-size: 11px; color: var(--muted); }
+
+/* EMPTY STATE */
+.empty { text-align: center; padding: 60px 20px; }
+.empty-icon { font-size: 32px; opacity: .3; margin-bottom: 12px; }
+.empty-text { font-size: 14px; color: var(--muted); }
+
+/* FILTER ROW */
+.filter-row { display: flex; gap: 8px; margin-bottom: 16px; flex-wrap: wrap; }
+.filter-chip {
+  padding: 6px 14px; border-radius: 8px; font-size: 12px; cursor: pointer;
+  border: 1px solid var(--border); color: var(--muted); transition: all .2s;
+  font-family: var(--font-mono);
+}
+.filter-chip:hover { border-color: var(--border2); color: var(--text); }
+.filter-chip.active { border-color: var(--blue-border); color: var(--blue); background: var(--blue-dim); }
+
+/* PAGINATION */
+.pagination { display: flex; align-items: center; justify-content: space-between; margin-top: 16px; font-size: 12px; color: var(--muted); }
+.page-btns { display: flex; gap: 4px; }
+.page-btn { padding: 5px 10px; border-radius: 6px; border: 1px solid var(--border); background: var(--surface); cursor: pointer; font-size: 11px; font-family: var(--font-mono); color: var(--text2); transition: all .2s; }
+.page-btn:hover { border-color: var(--border2); color: var(--text); }
+.page-btn.active { border-color: var(--blue-border); background: var(--blue-dim); color: var(--blue); }
+</style>
+</head>
+<body>
+
+<div class="cur" id="cur"></div>
+<div class="cur-r" id="curR"></div>
+
+<!-- SIDEBAR -->
+<nav class="sidebar">
+  <div class="sb-logo">
+    <div class="sb-logo-mark">⚡</div>
+    <div class="sb-logo-text">EnergyMatch</div>
+    <div class="sb-logo-badge">ADMIN</div>
+  </div>
+
+  <div class="sb-section">
+    <div class="sb-section-label">Principal</div>
+    <a class="sb-link active">
+      <span class="sb-icon">◈</span> Dashboard
+      <span class="sb-count alert">3</span>
+    </a>
+    <a class="sb-link" href="brief-wizard.html">
+      <span class="sb-icon">✦</span> Nouveau brief
+    </a>
+    <a class="sb-link">
+      <span class="sb-icon">◎</span> Briefs
+      <span class="sb-count">24</span>
+    </a>
+    <a class="sb-link">
+      <span class="sb-icon">◐</span> Experts
+      <span class="sb-count">512</span>
+    </a>
+  </div>
+
+  <div class="sb-section">
+    <div class="sb-section-label">Gestion</div>
+    <a class="sb-link"><span class="sb-icon">◷</span> Missions</a>
+    <a class="sb-link"><span class="sb-icon">◉</span> Emails envoyés</a>
+    <a class="sb-link"><span class="sb-icon">◌</span> Analytics</a>
+    <a class="sb-link"><span class="sb-icon">⊘</span> Paramètres</a>
+  </div>
+
+  <div class="sb-bottom">
+    <div class="sb-user">
+      <div class="sb-av">AD</div>
+      <div>
+        <div class="sb-name">Admin</div>
+        <div class="sb-role">energymatch.fr</div>
+      </div>
+      <div class="sb-status"></div>
+    </div>
+  </div>
+</nav>
+
+<!-- MAIN -->
+<div class="main">
+
+  <!-- TOPBAR -->
+  <div class="topbar">
+    <div class="tb-title">Vue d'ensemble</div>
+    <div class="tb-right">
+      <div class="tb-search">
+        <span style="opacity:.4">⌕</span>
+        <input type="text" placeholder="Rechercher un brief…">
+      </div>
+      <div class="tb-notif">🔔<div class="notif-dot"></div></div>
+      <button class="tb-btn" onclick="location.href='brief-wizard.html'">+ Nouveau brief</button>
+    </div>
+  </div>
+
+  <!-- CONTENT -->
+  <div class="content">
+
+    <!-- STATS -->
+    <div class="stats-row">
+      <div class="stat-card">
+        <div class="sc-label">Briefs total</div>
+        <div class="sc-val">247</div>
+        <div class="sc-delta delta-up">↑ +12 ce mois</div>
+      </div>
+      <div class="stat-card">
+        <div class="sc-label">En analyse</div>
+        <div class="sc-val" style="color:var(--amber)">3</div>
+        <div class="sc-delta delta-neutral">Agent IA actif</div>
+      </div>
+      <div class="stat-card">
+        <div class="sc-label">Taux succès</div>
+        <div class="sc-val" style="color:var(--green)">94%</div>
+        <div class="sc-delta delta-up">↑ +2% vs mois dernier</div>
+      </div>
+      <div class="stat-card">
+        <div class="sc-label">Revenus (mois)</div>
+        <div class="sc-val">4 780€</div>
+        <div class="sc-delta delta-up">↑ +18% vs N-1</div>
+      </div>
+    </div>
+
+    <!-- BRIEF TABLE -->
+    <div class="section-header">
+      <div class="section-title">Briefs récents</div>
+      <div class="view-toggle">
+        <div class="vt-btn active">Liste</div>
+        <div class="vt-btn">Pipeline</div>
+      </div>
+    </div>
+
+    <div class="filter-row">
+      <div class="filter-chip active" onclick="filterStatus(this,'all')">Tous</div>
+      <div class="filter-chip" onclick="filterStatus(this,'nouveau')">Nouveaux</div>
+      <div class="filter-chip" onclick="filterStatus(this,'en_analyse')">En analyse</div>
+      <div class="filter-chip" onclick="filterStatus(this,'profils_envoyes')">Envoyés</div>
+      <div class="filter-chip" onclick="filterStatus(this,'en_contact')">En contact</div>
+      <div class="filter-chip" onclick="filterStatus(this,'cloture_succes')">Clôturés</div>
+    </div>
+
+    <div style="background:var(--surface);border:1px solid var(--border);border-radius:12px;overflow:hidden">
+      <table class="brief-table" id="briefTable">
+        <thead>
+          <tr>
+            <th>Brief</th>
+            <th>Client</th>
+            <th>Type</th>
+            <th>Zone</th>
+            <th>Statut</th>
+            <th>Plan</th>
+            <th>Reçu</th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody id="briefTbody"></tbody>
+      </table>
+    </div>
+
+    <div class="pagination">
+      <span>Affichage de 1–10 sur 247 briefs</span>
+      <div class="page-btns">
+        <div class="page-btn">←</div>
+        <div class="page-btn active">1</div>
+        <div class="page-btn">2</div>
+        <div class="page-btn">3</div>
+        <div class="page-btn">…</div>
+        <div class="page-btn">25</div>
+        <div class="page-btn">→</div>
+      </div>
+    </div>
+
+    <!-- CHARTS -->
+    <div class="charts-row">
+      <div class="chart-card">
+        <div class="chart-title">Briefs par semaine</div>
+        <div class="bar-chart-wrap">
+          <div class="bar-chart" id="barChart"></div>
+        </div>
+      </div>
+      <div class="chart-card">
+        <div class="chart-title">Répartition par type</div>
+        <div class="donut-row">
+          <svg class="donut-svg" width="80" height="80" viewBox="0 0 80 80">
+            <circle cx="40" cy="40" r="30" fill="none" stroke="var(--surface2)" stroke-width="12"/>
+            <circle cx="40" cy="40" r="30" fill="none" stroke="var(--blue)" stroke-width="12" stroke-dasharray="66 123" stroke-dashoffset="0" transform="rotate(-90 40 40)"/>
+            <circle cx="40" cy="40" r="30" fill="none" stroke="var(--amber)" stroke-width="12" stroke-dasharray="35 154" stroke-dashoffset="-66" transform="rotate(-90 40 40)"/>
+            <circle cx="40" cy="40" r="30" fill="none" stroke="var(--purple)" stroke-width="12" stroke-dasharray="22 167" stroke-dashoffset="-101" transform="rotate(-90 40 40)"/>
+          </svg>
+          <div class="donut-legend">
+            <div class="dl-item"><div class="dl-dot" style="background:var(--blue)"></div><span class="dl-label">Courtier</span><span class="dl-val">35%</span></div>
+            <div class="dl-item"><div class="dl-dot" style="background:var(--amber)"></div><span class="dl-label">CEE</span><span class="dl-val">18%</span></div>
+            <div class="dl-item"><div class="dl-dot" style="background:var(--purple)"></div><span class="dl-label">Auditeur</span><span class="dl-val">12%</span></div>
+            <div class="dl-item"><div class="dl-dot" style="background:var(--muted)"></div><span class="dl-label">Autres</span><span class="dl-val">35%</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div><!-- /content -->
+</div><!-- /main -->
+
+<!-- DETAIL PANEL -->
+<div class="detail-overlay" id="overlay" onclick="closeDetail()"></div>
+<div class="detail-panel" id="detailPanel">
+  <div class="dp-header">
+    <div>
+      <div class="dp-brief-id" id="dp-id">BRIEF-2025-2847</div>
+      <div class="dp-client" id="dp-client">Marc Delvaux</div>
+      <div class="dp-company" id="dp-company">LogiPro SAS</div>
+    </div>
+    <div class="dp-close" onclick="closeDetail()">✕</div>
+  </div>
+  <div class="dp-body">
+
+    <div class="dp-section">
+      <div class="dp-section-title">Statut du dossier</div>
+      <div class="status-select">
+        <div class="ss-opt" onclick="selectStatus(this,'nouveau')">Nouveau</div>
+        <div class="ss-opt selected" onclick="selectStatus(this,'en_analyse')">En analyse</div>
+        <div class="ss-opt" onclick="selectStatus(this,'profils_envoyes')">Envoyé</div>
+        <div class="ss-opt" onclick="selectStatus(this,'en_contact')">En contact</div>
+        <div class="ss-opt" onclick="selectStatus(this,'cloture_succes')">Clôturé ✓</div>
+      </div>
+    </div>
+
+    <div class="dp-section">
+      <div class="dp-section-title">Détails du brief</div>
+      <div class="dp-row"><span class="dp-key">Type</span><span class="dp-val" id="dp-type">Courtier énergie</span></div>
+      <div class="dp-row"><span class="dp-key">Zone</span><span class="dp-val" id="dp-zone">Île-de-France</span></div>
+      <div class="dp-row"><span class="dp-key">Périmètre</span><span class="dp-val" id="dp-perimetre">Multi-sites 10+</span></div>
+      <div class="dp-row"><span class="dp-key">Budget</span><span class="dp-val" id="dp-budget">Sur devis</span></div>
+      <div class="dp-row"><span class="dp-key">Urgence</span><span class="dp-val" id="dp-urgence">Immédiatement</span></div>
+      <div class="dp-row"><span class="dp-key">Plan</span><span class="dp-val"><span class="plan-badge plan-premium" id="dp-plan">Premium</span></span></div>
+    </div>
+
+    <div class="dp-section">
+      <div class="dp-section-title">Description client</div>
+      <div class="dp-desc" id="dp-desc">Nous cherchons un courtier expérimenté pour renégocier nos contrats gaz sur 12 sites industriels en France. Consommation annuelle estimée à 8 GWh.</div>
+    </div>
+
+    <div class="dp-section">
+      <div class="dp-section-title">Matchings IA</div>
+      <div class="match-card">
+        <div class="mc-rank">RANG #1</div>
+        <div class="mc-head">
+          <div class="mc-av" style="background:rgba(59,130,246,.15);color:var(--blue);border:1px solid var(--blue-border)">AM</div>
+          <div><div class="mc-name">Alexandre Morin</div><div class="mc-role">Courtier énergie · IDF</div></div>
+          <div class="mc-score high">96</div>
+        </div>
+        <div class="mc-just">Alexandre Morin est basé en Île-de-France, zone du projet. Avec 142 missions et une note de 4.9/5, il est spécialisé en courtage multi-sites gaz.</div>
+      </div>
+      <div class="match-card">
+        <div class="mc-rank">RANG #2</div>
+        <div class="mc-head">
+          <div class="mc-av" style="background:rgba(34,197,94,.1);color:var(--green);border:1px solid rgba(34,197,94,.2)">MD</div>
+          <div><div class="mc-name">Marine Dupont</div><div class="mc-role">Consultant CEE · Occitanie</div></div>
+          <div class="mc-score mid">91</div>
+        </div>
+        <div class="mc-just">Marine Dupont intervient sur toute la France. Expert CEE avec taux de validation de 98%. Disponible immédiatement.</div>
+      </div>
+      <div class="match-card">
+        <div class="mc-rank">RANG #3</div>
+        <div class="mc-head">
+          <div class="mc-av" style="background:rgba(245,158,11,.1);color:var(--amber);border:1px solid rgba(245,158,11,.2)">CF</div>
+          <div><div class="mc-name">Claire Fontaine</div><div class="mc-role">Bureau d'études · Bretagne</div></div>
+          <div class="mc-score mid">87</div>
+        </div>
+        <div class="mc-just">Ingénieure OPQIBI certifiée. Expérience multi-sites et rénovation lourde. Répond en moins de 24h.</div>
+      </div>
+    </div>
+
+    <div class="dp-section">
+      <div class="dp-section-title">Notes internes</div>
+      <textarea style="width:100%;background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:10px 12px;color:var(--text);font-family:var(--font-sans);font-size:12px;font-weight:300;line-height:1.5;resize:none;height:72px;outline:none" placeholder="Ajouter une note…"></textarea>
+    </div>
+
+  </div>
+  <div class="dp-actions">
+    <button class="dp-action prim">Renvoyer email ↑</button>
+    <button class="dp-action sec">Relancer matching</button>
+    <button class="dp-action danger">Rembourser</button>
+  </div>
+</div>
+
+<script>
+// CURSOR
+const cur=document.getElementById('cur'),curR=document.getElementById('curR');
+let mx=0,my=0,rx=0,ry=0;
+document.addEventListener('mousemove',e=>{mx=e.clientX;my=e.clientY;cur.style.left=mx+'px';cur.style.top=my+'px';});
+(function a(){rx+=(mx-rx)*.1;ry+=(my-ry)*.1;curR.style.left=rx+'px';curR.style.top=ry+'px';requestAnimationFrame(a);})();
+
+// DATA
+const briefs=[
+  {id:'2847',client:'Marc Delvaux',co:'LogiPro SAS',type:'courtier_energie',typeLabel:'Courtier énergie',zone:'Île-de-France',status:'en_analyse',plan:'premium',ago:'12 min',urgent:true,desc:'Renégocier contrats gaz sur 12 sites industriels. 8 GWh/an.',perimetre:'Multi-sites 10+',budget:'Sur devis',urgence:'Immédiatement'},
+  {id:'2846',client:'Sophie Martin',co:'Atelier Martin SAS',type:'auditeur_energetique',typeLabel:'Auditeur énergétique',zone:'PACA',status:'profils_envoyes',plan:'essentiel',ago:'2h',desc:'Audit énergétique bâtiment tertiaire 3 000m².'},
+  {id:'2845',client:'Thomas Bertrand',co:'Groupe Bertrand',type:'installateur_photovoltaique',typeLabel:'Installateur PV',zone:'Occitanie',status:'en_contact',plan:'premium',ago:'5h',desc:'Installation PV 200 kWc entrepôt logistique.'},
+  {id:'2844',client:'Isabelle Garnier',co:'SCI Garnier',type:'consultant_cee',typeLabel:'Consultant CEE',zone:'Grand Est',status:'cloture_succes',plan:'essentiel',ago:'1j',desc:'Dossiers CEE pour rénovation résidence.'},
+  {id:'2843',client:'Éric Rousseau',co:'Rousseau Industrie',type:'bureau_etudes_thermique',typeLabel:'Bureau d\'études',zone:'Bretagne',status:'nouveau',plan:'essentiel',ago:'2j',desc:'Étude thermique RE2020 bâtiment neuf.'},
+  {id:'2842',client:'Julie Moreau',co:'Moreau & Co',type:'courtier_energie',typeLabel:'Courtier énergie',zone:'Normandie',status:'profils_envoyes',plan:'premium',ago:'2j',desc:'Courtage électricité 5 sites.'},
+  {id:'2841',client:'Antoine Lefevre',co:'Lefevre SA',type:'consultant_cee',typeLabel:'Consultant CEE',zone:'Centre-Val de Loire',status:'en_analyse',plan:'premium',ago:'3j',desc:'CEE industrie process continu.'},
+  {id:'2840',client:'Céline Dupuis',co:'Dupuis Médical',type:'auditeur_energetique',typeLabel:'Auditeur énergétique',zone:'Hauts-de-France',status:'cloture_succes',plan:'essentiel',ago:'4j',desc:'Audit clinique privée.'},
+  {id:'2839',client:'François Petit',co:'Petit & Fils',type:'courtier_energie',typeLabel:'Courtier énergie',zone:'Alsace',status:'en_contact',plan:'essentiel',ago:'5j',desc:'Renégociation gaz PME.'},
+  {id:'2838',client:'Nathalie Simon',co:'Simon Hôtels',type:'bureau_etudes_thermique',typeLabel:'Bureau d\'études',zone:'Côte d\'Azur',status:'cloture_echec',plan:'premium',ago:'6j',desc:'Étude faisabilité géothermie.'},
+];
+
+const statusLabels={nouveau:'Nouveau',en_analyse:'En analyse',profils_envoyes:'Envoyé',en_contact:'En contact',cloture_succes:'Clôturé ✓',cloture_echec:'Échec'};
+let activeFilter='all';
+
+function renderTable(data){
+  const tbody=document.getElementById('briefTbody');
+  tbody.innerHTML='';
+  data.forEach(b=>{
+    const tr=document.createElement('tr');
+    tr.innerHTML=`
+      <td><div class="brief-id">#${b.id}</div>${b.urgent?'<div style="font-size:10px;color:var(--red);margin-top:2px;font-family:var(--font-mono)">URGENT</div>':''}</td>
+      <td><div class="client-name">${b.client}</div><div class="client-co">${b.co||''}</div></td>
+      <td><div class="type-badge">${b.typeLabel}</div></td>
+      <td><span style="font-size:12px;color:var(--text2)">${b.zone}</span></td>
+      <td><div class="status-pill s-${b.status}"><div class="s-dot"></div>${statusLabels[b.status]}</div></td>
+      <td><span class="plan-badge ${b.plan==='premium'?'plan-premium':'plan-essentiel'}">${b.plan}</span></td>
+      <td><div class="time-ago">${b.ago}</div></td>
+      <td><div class="row-actions">
+        <div class="ra-btn primary" onclick="openDetail(event,${JSON.stringify(b).replace(/"/g,'&quot;')})">Voir →</div>
+      </div></td>
+    `;
+    tbody.appendChild(tr);
+  });
+}
+
+function filterStatus(el,status){
+  document.querySelectorAll('.filter-chip').forEach(c=>c.classList.remove('active'));
+  el.classList.add('active');
+  activeFilter=status;
+  const filtered=status==='all'?briefs:briefs.filter(b=>b.status===status);
+  renderTable(filtered);
+}
+
+function openDetail(e,brief){
+  e.stopPropagation();
+  document.getElementById('dp-id').textContent='BRIEF-2025-'+brief.id;
+  document.getElementById('dp-client').textContent=brief.client;
+  document.getElementById('dp-company').textContent=brief.co||'—';
+  document.getElementById('dp-type').textContent=brief.typeLabel;
+  document.getElementById('dp-zone').textContent=brief.zone;
+  document.getElementById('dp-perimetre').textContent=brief.perimetre||'Non précisé';
+  document.getElementById('dp-budget').textContent=brief.budget||'Sur devis';
+  document.getElementById('dp-urgence').textContent=brief.urgence||'Flexible';
+  document.getElementById('dp-plan').textContent=brief.plan==='premium'?'Premium':'Essentiel';
+  document.getElementById('dp-plan').className='plan-badge '+(brief.plan==='premium'?'plan-premium':'plan-essentiel');
+  document.getElementById('dp-desc').textContent=brief.desc||'—';
+  document.getElementById('detailPanel').classList.add('open');
+  document.getElementById('overlay').classList.add('open');
+}
+
+function closeDetail(){
+  document.getElementById('detailPanel').classList.remove('open');
+  document.getElementById('overlay').classList.remove('open');
+}
+
+function selectStatus(el,val){
+  document.querySelectorAll('.ss-opt').forEach(o=>o.classList.remove('selected'));
+  el.classList.add('selected');
+}
+
+// BAR CHART
+const barData=[4,7,5,12,9,15,11];
+const barLabels=['L','M','M','J','V','S','D'];
+const maxBar=Math.max(...barData);
+const barChart=document.getElementById('barChart');
+barData.forEach((v,i)=>{
+  const bar=document.createElement('div');
+  bar.className='bar';
+  bar.style.cssText=`height:${(v/maxBar*100)}%;background:${i===6?'rgba(59,130,246,.5)':'rgba(255,255,255,0.06)'};`;
+  bar.innerHTML=`<div class="bar-label">${barLabels[i]}</div>`;
+  barChart.appendChild(bar);
+});
+
+renderTable(briefs);
+</script>
+</body>
+</html>

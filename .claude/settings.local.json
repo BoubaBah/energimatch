@@ -1,0 +1,14 @@
+{
+  "permissions": {
+    "allow": [
+      "mcp__Claude_in_Chrome__tabs_context_mcp",
+      "mcp__Claude_in_Chrome__browser_batch",
+      "Bash(ls \"C:\\\\Users\\\\imeny\\\\Downloads\\\\jpg\")",
+      "Bash(mkdir -p \"C:\\\\Users\\\\imeny\\\\OneDrive\\\\Bureau\\\\projet energyMatch\\\\.claude\")",
+      "mcp__Claude_Preview__preview_start",
+      "Bash(git init *)",
+      "Bash(git add *)",
+      "Bash(git commit *)"
+    ]
+  }
+}
