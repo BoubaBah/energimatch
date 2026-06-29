@@ -5,24 +5,27 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Déposer un brief — EnergyMatch</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,400;0,9..144,500;1,9..144,300;1,9..144,400;1,9..144,500&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
 <style>
 :root {
-  --bg: #09090b;
-  --bg2: #0f0f12;
-  --surface: #111114;
-  --surface2: #18181c;
-  --border: rgba(255,255,255,0.07);
-  --border-focus: rgba(255,255,255,0.18);
-  --blue: #3b82f6;
-  --blue-dim: rgba(59,130,246,0.12);
-  --blue-border: rgba(59,130,246,0.3);
-  --text: #f4f4f5;
-  --muted: #52525b;
-  --muted2: #71717a;
-  --font-serif: 'Instrument Serif', Georgia, serif;
-  --font-sans: 'DM Sans', sans-serif;
-  --font-mono: 'DM Mono', monospace;
+  --bg:        #06050a;
+  --bg2:       #0b0a10;
+  --surface:   #111018;
+  --surface2:  #17161f;
+  --border:    rgba(245,240,232,0.07);
+  --border2:   rgba(245,240,232,0.14);
+  --amber:     #e8a020;
+  --amber-dim: rgba(232,160,32,0.08);
+  --amber-bdr: rgba(232,160,32,0.22);
+  --teal:      #2dd4bf;
+  --green:     #4ade80;
+  --red:       #f87171;
+  --white:     #f5f0e8;
+  --muted:     #6b6458;
+  --muted2:    #8a8070;
+  --serif:     'Fraunces', Georgia, serif;
+  --sans:      'DM Sans', sans-serif;
+  --mono:      'DM Mono', monospace;
 }
 
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
@@ -30,397 +33,448 @@ html { scroll-behavior: smooth; }
 
 body {
   background: var(--bg);
-  color: var(--text);
-  font-family: var(--font-sans);
+  color: var(--white);
+  font-family: var(--sans);
   min-height: 100vh;
   overflow-x: hidden;
   cursor: none;
 }
 
-/* CURSOR */
-.cur { position:fixed;width:5px;height:5px;background:#fff;border-radius:50%;pointer-events:none;z-index:9999;transform:translate(-50%,-50%);mix-blend-mode:difference;transition:width .15s,height .15s; }
-.cur-r { position:fixed;width:28px;height:28px;border:1px solid rgba(255,255,255,0.2);border-radius:50%;pointer-events:none;z-index:9998;transform:translate(-50%,-50%); }
+/* AMBIENT BACKGROUND */
+.bg-light {
+  position: fixed; inset: 0; z-index: 0; pointer-events: none;
+  background:
+    radial-gradient(ellipse 70% 55% at 90% -5%, rgba(232,160,32,0.15) 0%, transparent 55%),
+    radial-gradient(ellipse 35% 40% at 5% 100%, rgba(45,212,191,0.05) 0%, transparent 50%),
+    radial-gradient(ellipse 50% 50% at 50% 50%, rgba(232,160,32,0.03) 0%, transparent 70%);
+  animation: bgBreath 14s ease-in-out infinite alternate;
+}
+.bg-grid {
+  position: fixed; inset: 0; z-index: 0; pointer-events: none; opacity: .35;
+  background-image:
+    linear-gradient(rgba(245,240,232,0.022) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(245,240,232,0.022) 1px, transparent 1px);
+  background-size: 60px 60px;
+  mask-image: radial-gradient(ellipse 80% 80% at 50% 50%, black 0%, transparent 100%);
+}
+@keyframes bgBreath { from { opacity:.75 } to { opacity:1 } }
 
 /* GRAIN */
 body::after {
-  content:'';position:fixed;inset:0;z-index:1;pointer-events:none;opacity:.025;
-  background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 512 512' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  content:''; position:fixed; inset:0; z-index:1; pointer-events:none; opacity:.025;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 512 512' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
 }
 
-/* VIGNETTE */
-body::before {
-  content:'';position:fixed;inset:0;z-index:0;pointer-events:none;
-  background: radial-gradient(ellipse 80% 80% at 50% 0%, rgba(59,130,246,0.04) 0%, transparent 60%),
-              radial-gradient(ellipse 60% 60% at 100% 100%, rgba(59,130,246,0.03) 0%, transparent 50%);
+/* CURSOR */
+.cur  { position:fixed;width:5px;height:5px;background:var(--amber);border-radius:50%;pointer-events:none;z-index:9999;transform:translate(-50%,-50%);mix-blend-mode:normal; }
+.cur-r{ position:fixed;width:30px;height:30px;border:1px solid rgba(232,160,32,0.3);border-radius:50%;pointer-events:none;z-index:9998;transform:translate(-50%,-50%);transition:width .2s,height .2s,border-color .2s; }
+
+/* FLOATING CHIPS */
+.vp-chip {
+  position:fixed; border:1px solid var(--amber-bdr); border-radius:8px;
+  padding:8px 14px; background:rgba(6,5,10,0.88); backdrop-filter:blur(14px);
+  font-size:11px; color:var(--muted2); display:flex; align-items:center; gap:7px;
+  pointer-events:none; z-index:10; font-family:var(--mono);
+  animation:chipFloat 5s ease-in-out infinite alternate;
 }
+.vp-chip .chip-dot { width:5px; height:5px; border-radius:50%; }
+.chip-1 { top:160px; left:32px; animation-delay:0s; }
+.chip-2 { top:230px; right:50px; animation-delay:-1.8s; }
+.chip-3 { bottom:200px; left:52px; animation-delay:-3.2s; }
+.chip-4 { bottom:160px; right:36px; animation-delay:-4.1s; }
+@keyframes chipFloat { from{transform:translateY(0)} to{transform:translateY(-7px)} }
 
 /* LAYOUT */
-.wrapper { position:relative;z-index:2;min-height:100vh;display:grid;grid-template-columns:1fr 480px 1fr;grid-template-rows:auto 1fr auto; }
+.wrapper {
+  position:relative; z-index:2; min-height:100vh;
+  display:grid; grid-template-columns:1fr 500px 1fr; grid-template-rows:auto auto 1fr;
+}
 
 /* NAV */
 nav {
-  grid-column:1/-1; display:flex;align-items:center;justify-content:space-between;
-  padding:24px 48px;border-bottom:1px solid var(--border);
+  grid-column:1/-1; display:flex; align-items:center; justify-content:space-between;
+  padding:22px 48px; border-bottom:1px solid var(--border);
 }
-.nav-logo { font-family:var(--font-serif);font-size:20px;font-style:italic;color:var(--text);text-decoration:none;letter-spacing:-.3px; }
-.nav-logo span { font-style:normal;opacity:.3;font-family:var(--font-sans);font-size:14px;font-weight:300;margin-left:6px; }
+.nav-logo {
+  font-family:var(--serif); font-size:20px; font-style:italic;
+  color:var(--white); text-decoration:none; letter-spacing:-.3px;
+}
+.nav-logo em { color:var(--amber); font-style:italic; }
+.nav-logo span { font-style:normal; opacity:.35; font-family:var(--sans); font-size:13px; font-weight:300; margin-left:6px; }
 .nav-back {
-  display:flex;align-items:center;gap:8px;color:var(--muted2);font-size:13px;text-decoration:none;
-  transition:color .2s; border:1px solid var(--border);padding:8px 16px;border-radius:8px;
+  display:flex; align-items:center; gap:8px; color:var(--muted2); font-size:13px;
+  text-decoration:none; transition:color .2s; border:1px solid var(--border);
+  padding:7px 16px; border-radius:8px;
 }
-.nav-back:hover { color:var(--text);border-color:var(--border-focus); }
-.secure { font-family:var(--font-mono);font-size:11px;color:var(--muted);display:flex;align-items:center;gap:6px; }
-.secure::before { content:'';width:6px;height:6px;border-radius:50%;background:#22c55e;display:block; }
+.nav-back:hover { color:var(--white); border-color:var(--border2); }
+.secure {
+  font-family:var(--mono); font-size:11px; color:var(--muted);
+  display:flex; align-items:center; gap:7px;
+}
+.secure::before { content:''; width:6px; height:6px; border-radius:50%; background:var(--green); display:block; }
 
-/* STEP INDICATOR */
+/* STEP BAR */
 .step-bar {
-  grid-column:1/-1;display:flex;justify-content:center;padding:40px 48px 0;
-  position:relative;
+  grid-column:1/-1; display:flex; justify-content:center;
+  padding:36px 48px 0; position:relative;
 }
-.step-bar::before { content:'';position:absolute;top:61px;left:calc(50% - 180px);width:360px;height:1px;background:var(--border);z-index:0; }
-.steps { display:flex;gap:0;align-items:center;position:relative;z-index:1; }
-.step-dot-wrap { display:flex;flex-direction:column;align-items:center;gap:8px;width:100px; }
+.step-bar::before {
+  content:''; position:absolute; top:58px;
+  left:calc(50% - 190px); width:380px; height:1px;
+  background:var(--border); z-index:0;
+}
+.steps { display:flex; gap:0; align-items:center; position:relative; z-index:1; }
+.step-dot-wrap { display:flex; flex-direction:column; align-items:center; gap:8px; width:110px; }
 .step-dot {
-  width:32px;height:32px;border-radius:50%;border:1px solid var(--border);
-  display:grid;place-items:center;font-family:var(--font-mono);font-size:11px;
-  background:var(--bg);color:var(--muted);transition:all .4s;cursor:pointer;
+  width:32px; height:32px; border-radius:50%; border:1px solid var(--border);
+  display:grid; place-items:center; font-family:var(--mono); font-size:11px;
+  background:var(--bg); color:var(--muted); transition:all .4s; cursor:pointer;
 }
-.step-dot.active { border-color:var(--blue-border);background:var(--blue-dim);color:var(--blue); }
-.step-dot.done { border-color:rgba(34,197,94,0.3);background:rgba(34,197,94,0.08);color:#22c55e; }
-.step-label { font-size:11px;color:var(--muted);text-align:center;white-space:nowrap;font-weight:300; }
-.step-label.active { color:var(--text); }
-.step-connector { width:68px;height:1px;background:var(--border);margin:0 -34px;align-self:flex-start;margin-top:16px;position:relative; }
-.step-connector.done { background:rgba(34,197,94,0.2); }
+.step-dot.active { border-color:var(--amber-bdr); background:var(--amber-dim); color:var(--amber); box-shadow:0 0 16px rgba(232,160,32,0.12); }
+.step-dot.done   { border-color:rgba(74,222,128,0.3); background:rgba(74,222,128,0.08); color:var(--green); }
+.step-label { font-size:11px; color:var(--muted); text-align:center; white-space:nowrap; font-weight:300; }
+.step-label.active { color:var(--white); }
+.step-connector { width:68px; height:1px; background:var(--border); margin:0 -34px; align-self:flex-start; margin-top:16px; transition:background .5s; }
+.step-connector.done { background:rgba(74,222,128,0.2); }
+
+/* PROGRESS */
+.progress-line { height:1px; background:var(--border); border-radius:1px; overflow:hidden; }
+.progress-fill {
+  height:100%;
+  background:linear-gradient(90deg, var(--amber), rgba(232,160,32,0.4));
+  transition:width .5s cubic-bezier(.4,0,.2,1);
+  border-radius:1px;
+  box-shadow:0 0 8px rgba(232,160,32,0.4);
+}
 
 /* MAIN */
-main { grid-column:2;padding:48px 0 80px;display:flex;flex-direction:column;align-items:stretch; }
+main { grid-column:2; padding:44px 0 80px; display:flex; flex-direction:column; align-items:stretch; }
 
 /* FORM STEPS */
 .form-step { display:none; }
-.form-step.active { display:flex;flex-direction:column;gap:32px; }
-.form-step.slide-in    { animation:stepIn      .38s cubic-bezier(.4,0,.2,1) forwards; }
+.form-step.active { display:flex; flex-direction:column; gap:28px; }
+.form-step.slide-in      { animation:stepIn     .38s cubic-bezier(.4,0,.2,1) forwards; }
 .form-step.slide-in-back { animation:stepInBack .38s cubic-bezier(.4,0,.2,1) forwards; }
 
-@keyframes stepIn      { from{opacity:0;transform:translateX(32px)}  to{opacity:1;transform:translateX(0)} }
-@keyframes stepInBack  { from{opacity:0;transform:translateX(-32px)} to{opacity:1;transform:translateX(0)} }
-@keyframes stepOut     { from{opacity:1;transform:translateX(0)}  to{opacity:0;transform:translateX(-32px)} }
-@keyframes stepOutBack { from{opacity:1;transform:translateX(0)}  to{opacity:0;transform:translateX(32px)} }
+@keyframes stepIn      { from{opacity:0;transform:translateX(28px)}  to{opacity:1;transform:translateX(0)} }
+@keyframes stepInBack  { from{opacity:0;transform:translateX(-28px)} to{opacity:1;transform:translateX(0)} }
 
-.step-heading { margin-bottom:8px; }
-.step-num { font-family:var(--font-mono);font-size:11px;color:var(--muted);letter-spacing:2px;text-transform:uppercase;margin-bottom:12px; }
-.step-title { font-family:var(--font-serif);font-size:36px;font-weight:400;line-height:1.15;letter-spacing:-.5px; }
-.step-title em { font-style:italic;color:var(--muted2); }
-.step-sub { color:var(--muted2);font-size:14px;line-height:1.6;margin-top:8px;font-weight:300; }
+/* STEP HEADING */
+.step-num {
+  font-family:var(--mono); font-size:11px; color:var(--amber); letter-spacing:2px;
+  text-transform:uppercase; margin-bottom:12px; opacity:.7;
+}
+.step-title {
+  font-family:var(--serif); font-size:38px; font-weight:400;
+  line-height:1.1; letter-spacing:-.5px; color:var(--white);
+}
+.step-title em {
+  font-style:italic; font-weight:300; color:var(--amber);
+}
+.step-sub { color:var(--muted2); font-size:14px; line-height:1.65; margin-top:8px; font-weight:300; }
 
 /* OPTION GRID */
-.option-grid { display:grid;grid-template-columns:1fr 1fr;gap:10px; }
+.option-grid { display:grid; grid-template-columns:1fr 1fr; gap:10px; }
 .option-grid.cols-3 { grid-template-columns:1fr 1fr 1fr; }
 
 .opt {
-  position:relative;border:1px solid var(--border);border-radius:12px;padding:18px 16px;
-  cursor:pointer;transition:all .25s;background:var(--surface);
-  display:flex;flex-direction:column;gap:8px;
+  position:relative; border:1px solid var(--border); border-radius:12px;
+  padding:18px 16px; cursor:pointer; transition:all .25s; background:var(--surface);
+  display:flex; flex-direction:column; gap:8px;
 }
-.opt:hover { border-color:var(--border-focus);background:var(--surface2); }
-.opt.selected { border-color:var(--blue-border);background:var(--blue-dim); }
-.opt.selected .opt-icon { color:var(--blue); }
-.opt input { position:absolute;opacity:0;pointer-events:none; }
-.opt-icon { font-size:20px;line-height:1; }
-.opt-label { font-size:14px;font-weight:500;line-height:1.2; }
-.opt-desc { font-size:12px;color:var(--muted2);font-weight:300;line-height:1.4; }
+.opt:hover { border-color:var(--border2); background:var(--surface2); }
+.opt.selected { border-color:var(--amber-bdr); background:var(--amber-dim); }
+.opt.selected .opt-icon { color:var(--amber); }
+.opt input { position:absolute; opacity:0; pointer-events:none; }
+.opt-icon { font-size:20px; line-height:1; }
+.opt-label { font-size:14px; font-weight:500; color:var(--white); line-height:1.2; }
+.opt-desc { font-size:12px; color:var(--muted2); font-weight:300; line-height:1.4; }
 .opt-check {
-  position:absolute;top:12px;right:12px;width:16px;height:16px;
-  border-radius:50%;border:1px solid var(--border);
-  display:grid;place-items:center;font-size:9px;transition:all .2s;
+  position:absolute; top:12px; right:12px; width:16px; height:16px;
+  border-radius:50%; border:1px solid var(--border);
+  display:grid; place-items:center; font-size:9px; transition:all .2s;
 }
-.opt.selected .opt-check { border-color:var(--blue);background:var(--blue);color:#fff; }
-
-/* FLOATING TAGS (like VeriPulse) */
-.floating-tags { position:relative;height:0;overflow:visible; }
-.ftag {
-  position:absolute;display:inline-flex;align-items:center;gap:6px;
-  border:1px solid var(--border);border-radius:100px;padding:5px 12px;
-  font-size:11px;color:var(--muted2);background:var(--bg);
-  white-space:nowrap;backdrop-filter:blur(8px);
-  animation:floatTag 4s ease-in-out infinite alternate;
-}
-.ftag .dot { width:5px;height:5px;border-radius:50%;background:var(--blue);opacity:.6; }
-.ftag-1 { top:-20px;left:-160px;animation-delay:0s; }
-.ftag-2 { top:40px;right:-140px;animation-delay:-.8s; }
-.ftag-3 { top:-60px;right:-100px;animation-delay:-1.6s; }
-@keyframes floatTag { from{transform:translateY(0)} to{transform:translateY(-6px)} }
+.opt.selected .opt-check { border-color:var(--amber); background:var(--amber); color:var(--bg); }
 
 /* FIELD */
-.field { display:flex;flex-direction:column;gap:8px; }
-.label { font-size:12px;color:var(--muted2);letter-spacing:.5px;text-transform:uppercase;font-weight:400;font-family:var(--font-mono); }
-.input, .textarea, .select {
-  background:var(--surface);border:1px solid var(--border);border-radius:10px;
-  padding:14px 16px;color:var(--text);font-family:var(--font-sans);font-size:15px;
-  outline:none;transition:all .25s;width:100%;
+.field { display:flex; flex-direction:column; gap:8px; }
+.label {
+  font-size:11px; color:var(--muted); letter-spacing:1px;
+  text-transform:uppercase; font-weight:400; font-family:var(--mono);
+}
+.input, .textarea {
+  background:var(--surface); border:1px solid var(--border); border-radius:10px;
+  padding:14px 16px; color:var(--white); font-family:var(--sans); font-size:15px;
+  outline:none; transition:all .25s; width:100%;
 }
 .input::placeholder, .textarea::placeholder { color:var(--muted); }
-.input:focus, .textarea:focus, .select:focus { border-color:var(--border-focus);background:var(--surface2); }
-.textarea { resize:none;height:120px;line-height:1.6; }
-.select { appearance:none;cursor:pointer;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath d='M6 8L1 3h10z' fill='%2352525b'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 16px center; }
-.select option { background:#111; }
-
-.field-row { display:grid;grid-template-columns:1fr 1fr;gap:12px; }
+.input:focus, .textarea:focus {
+  border-color:var(--amber-bdr); background:var(--surface2);
+  box-shadow:0 0 0 3px rgba(232,160,32,0.06);
+}
+.textarea { resize:none; height:120px; line-height:1.6; }
+.field-row { display:grid; grid-template-columns:1fr 1fr; gap:12px; }
 
 /* BUDGET SLIDER */
-.slider-wrap { position:relative;padding:4px 0 0; }
 .budget-display {
-  font-family:var(--font-mono);font-size:28px;font-weight:500;
-  color:var(--text);margin-bottom:16px;letter-spacing:-1px;
+  font-family:var(--mono); font-size:28px; font-weight:500;
+  color:var(--white); margin-bottom:16px; letter-spacing:-1px;
 }
-.budget-display span { font-size:14px;color:var(--muted2);margin-left:4px;font-weight:400; }
+.budget-display span { font-size:13px; color:var(--muted2); margin-left:4px; font-weight:400; }
 input[type=range] {
-  width:100%;appearance:none;height:2px;background:var(--border);border-radius:2px;outline:none;
-  cursor:pointer;
+  width:100%; appearance:none; height:2px;
+  background:linear-gradient(90deg, var(--amber) var(--pct,0%), var(--border) var(--pct,0%));
+  border-radius:2px; outline:none; cursor:pointer;
 }
 input[type=range]::-webkit-slider-thumb {
-  appearance:none;width:18px;height:18px;border-radius:50%;
-  background:var(--text);border:2px solid var(--bg);box-shadow:0 0 0 1px var(--blue-border);
-  cursor:pointer;transition:transform .2s;
+  appearance:none; width:18px; height:18px; border-radius:50%;
+  background:var(--amber); border:2px solid var(--bg);
+  box-shadow:0 0 10px rgba(232,160,32,0.5); cursor:pointer; transition:transform .2s;
 }
-input[type=range]::-webkit-slider-thumb:hover { transform:scale(1.2); }
-.slider-labels { display:flex;justify-content:space-between;margin-top:8px; }
-.slider-labels span { font-size:11px;color:var(--muted);font-family:var(--font-mono); }
+input[type=range]::-webkit-slider-thumb:hover { transform:scale(1.25); }
+.slider-labels { display:flex; justify-content:space-between; margin-top:8px; }
+.slider-labels span { font-size:10px; color:var(--muted); font-family:var(--mono); }
 
-/* URGENCE OPTIONS */
-.urgence-grid { display:grid;grid-template-columns:repeat(3,1fr);gap:8px; }
+/* URGENCE */
+.urgence-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:8px; }
 .urg-opt {
-  border:1px solid var(--border);border-radius:10px;padding:14px 12px;text-align:center;
-  cursor:pointer;transition:all .25s;background:var(--surface);
+  border:1px solid var(--border); border-radius:10px; padding:14px 12px;
+  text-align:center; cursor:pointer; transition:all .25s; background:var(--surface);
 }
-.urg-opt:hover { border-color:var(--border-focus); }
-.urg-opt.selected { border-color:var(--blue-border);background:var(--blue-dim); }
-.urg-opt .urg-icon { font-size:18px;margin-bottom:6px; }
-.urg-opt .urg-label { font-size:12px;font-weight:500; }
-.urg-opt .urg-sub { font-size:11px;color:var(--muted2);margin-top:2px; }
+.urg-opt:hover { border-color:var(--border2); }
+.urg-opt.selected { border-color:var(--amber-bdr); background:var(--amber-dim); }
+.urg-opt .urg-icon { font-size:18px; margin-bottom:6px; }
+.urg-opt .urg-label { font-size:12px; font-weight:500; color:var(--white); }
+.urg-opt .urg-sub { font-size:11px; color:var(--muted2); margin-top:2px; }
 
-/* SUMMARY */
+/* SUMMARY CARD */
 .summary-card {
-  border:1px solid var(--border);border-radius:14px;overflow:hidden;background:var(--surface);
+  border:1px solid var(--amber-bdr); border-radius:14px;
+  overflow:hidden; background:var(--surface);
+  box-shadow:0 0 40px rgba(232,160,32,0.06);
 }
-.summary-section { padding:20px 24px;border-bottom:1px solid var(--border); }
+.summary-section { padding:20px 24px; border-bottom:1px solid var(--border); }
 .summary-section:last-child { border-bottom:none; }
-.sum-label { font-family:var(--font-mono);font-size:10px;color:var(--muted);letter-spacing:2px;text-transform:uppercase;margin-bottom:12px; }
-.sum-row { display:flex;justify-content:space-between;align-items:center;margin-bottom:8px; }
-.sum-row:last-child { margin-bottom:0; }
-.sum-key { font-size:13px;color:var(--muted2); }
-.sum-val { font-size:13px;font-weight:500; }
-.sum-val.blue { color:var(--blue); }
-
-.price-display {
-  display:flex;align-items:baseline;gap:6px;
-  font-family:var(--font-mono);
+.sum-label {
+  font-family:var(--mono); font-size:10px; color:var(--amber);
+  letter-spacing:2px; text-transform:uppercase; margin-bottom:14px; opacity:.7;
 }
-.price-big { font-size:40px;font-weight:500;letter-spacing:-2px; }
-.price-currency { font-size:18px;color:var(--muted2); }
-.price-per { font-size:12px;color:var(--muted2); }
+.sum-row {
+  display:flex; justify-content:space-between; align-items:center;
+  margin-bottom:10px; opacity:0;
+  animation:revealRow .4s ease forwards;
+}
+.sum-row:last-child { margin-bottom:0; }
+.sum-key { font-size:13px; color:var(--muted2); }
+.sum-val { font-size:13px; font-weight:500; color:var(--white); }
+.sum-val.amber { color:var(--amber); }
+@keyframes revealRow { from{opacity:0;transform:translateY(6px)} to{opacity:1;transform:translateY(0)} }
+
+.price-display { display:flex; align-items:baseline; gap:6px; font-family:var(--mono); }
+.price-big { font-size:42px; font-weight:500; letter-spacing:-2px; color:var(--amber); }
+.price-currency { font-size:18px; color:var(--muted2); }
+.price-per { font-size:12px; color:var(--muted2); }
 
 /* BUTTONS */
-.btn-group { display:flex;gap:10px;align-items:center; }
+.btn-group { display:flex; gap:10px; align-items:center; }
 .btn-primary {
-  flex:1;background:var(--text);color:var(--bg);border:none;border-radius:10px;
-  padding:15px 28px;font-family:var(--font-sans);font-size:15px;font-weight:500;cursor:pointer;
-  transition:all .2s;position:relative;overflow:hidden;
+  flex:1; background:var(--amber); color:var(--bg); border:none; border-radius:10px;
+  padding:15px 28px; font-family:var(--sans); font-size:15px; font-weight:500; cursor:pointer;
+  transition:all .2s; position:relative; overflow:hidden; letter-spacing:.2px;
 }
-.btn-primary::before {
-  content:'';position:absolute;inset:0;background:rgba(255,255,255,0);transition:background .2s;
-}
-.btn-primary:hover { transform:translateY(-1px);box-shadow:0 8px 24px rgba(0,0,0,.4); }
+.btn-primary:hover { transform:translateY(-1px); box-shadow:0 8px 28px rgba(232,160,32,0.3); }
 .btn-primary:active { transform:translateY(0); }
-
 .btn-secondary {
-  background:transparent;color:var(--muted2);border:1px solid var(--border);border-radius:10px;
-  padding:15px 20px;font-family:var(--font-sans);font-size:14px;cursor:pointer;
-  transition:all .2s;
+  background:transparent; color:var(--muted2); border:1px solid var(--border);
+  border-radius:10px; padding:15px 20px; font-family:var(--sans); font-size:14px;
+  cursor:pointer; transition:all .2s;
 }
-.btn-secondary:hover { border-color:var(--border-focus);color:var(--text); }
-
-/* PROGRESS LINE */
-.progress-line {
-  height:1px;background:var(--border);border-radius:1px;overflow:hidden;margin-top:0;
-}
-.progress-fill {
-  height:100%;background:linear-gradient(90deg,var(--blue),rgba(59,130,246,.5));
-  transition:width .5s cubic-bezier(.4,0,.2,1);border-radius:1px;
-}
+.btn-secondary:hover { border-color:var(--border2); color:var(--white); }
 
 /* TRUST STRIP */
 .trust-strip {
-  display:flex;gap:24px;align-items:center;padding:16px 0;border-top:1px solid var(--border);margin-top:8px;
+  display:flex; gap:24px; align-items:center;
+  padding:14px 0; border-top:1px solid var(--border); margin-top:4px;
 }
-.trust-item { display:flex;align-items:center;gap:6px;font-size:12px;color:var(--muted);font-weight:300; }
-.trust-icon { font-size:14px;opacity:.5; }
+.trust-item { display:flex; align-items:center; gap:7px; font-size:12px; color:var(--muted); font-weight:300; }
+.trust-icon { opacity:.5; }
 
-/* STEP 4 SUCCESS */
-.success-wrap { text-align:center;padding:40px 0; }
-.success-icon {
-  width:72px;height:72px;border-radius:50%;
-  border:1px solid rgba(34,197,94,0.3);background:rgba(34,197,94,0.08);
-  display:grid;place-items:center;font-size:32px;margin:0 auto 28px;
-  animation:successPop .5s cubic-bezier(.34,1.56,.64,1);
+/* ── SUCCESS / MATCHING SCREEN ── */
+.success-wrap { padding:20px 0; }
+
+/* Scan phase */
+.scan-phase { text-align:center; padding:40px 20px; }
+.scan-icon {
+  width:64px; height:64px; border-radius:50%; border:1px solid var(--amber-bdr);
+  display:grid; place-items:center; margin:0 auto 24px;
+  position:relative; overflow:hidden;
 }
-@keyframes successPop { from{transform:scale(.5);opacity:0} to{transform:scale(1);opacity:1} }
-.success-title { font-family:var(--font-serif);font-size:32px;margin-bottom:12px; }
-.success-sub { color:var(--muted2);font-size:15px;line-height:1.6;max-width:360px;margin:0 auto 32px;font-weight:300; }
+.scan-icon::after {
+  content:''; position:absolute; top:-100%; left:0; width:100%;
+  height:100%; background:linear-gradient(180deg,transparent,rgba(232,160,32,0.3),transparent);
+  animation:scanSweep 1.4s linear infinite;
+}
+@keyframes scanSweep { to{top:200%} }
+.scan-emoji { font-size:24px; position:relative; z-index:1; }
+.scan-title {
+  font-family:var(--serif); font-size:24px; font-style:italic;
+  color:var(--white); margin-bottom:8px;
+}
+.scan-status {
+  font-family:var(--mono); font-size:12px; color:var(--amber);
+  margin-bottom:20px; letter-spacing:.5px; min-height:18px;
+}
+.scan-bar-wrap { background:var(--border); border-radius:4px; height:3px; overflow:hidden; max-width:280px; margin:0 auto; }
+.scan-bar-fill {
+  height:100%; background:var(--amber); border-radius:4px;
+  width:0%; transition:width .3s ease; box-shadow:0 0 8px rgba(232,160,32,0.6);
+}
+
+/* Result phase */
+.result-phase { display:none; }
+.match-found-label {
+  font-family:var(--mono); font-size:11px; color:var(--amber); letter-spacing:2px;
+  text-transform:uppercase; text-align:center; margin-bottom:20px; opacity:.7;
+}
+.expert-cards { display:flex; flex-direction:column; gap:10px; margin-bottom:28px; }
+.expert-card {
+  border:1px solid var(--border); border-radius:12px; padding:16px 18px;
+  background:var(--surface); display:flex; align-items:center; gap:14px;
+  opacity:0; transform:translateY(12px);
+  transition:opacity .45s ease, transform .45s ease, border-color .2s;
+}
+.expert-card.visible { opacity:1; transform:translateY(0); }
+.expert-card:hover { border-color:var(--amber-bdr); }
+.ec-rank { font-family:var(--mono); font-size:9px; color:var(--muted); min-width:40px; text-align:center; }
+.ec-av {
+  width:38px; height:38px; border-radius:9px; display:grid; place-items:center;
+  font-family:var(--mono); font-size:11px; font-weight:600; flex-shrink:0;
+}
+.ec-info { flex:1; min-width:0; }
+.ec-name { font-size:14px; font-weight:500; color:var(--white); }
+.ec-role { font-size:12px; color:var(--muted2); margin-top:2px; }
+.ec-score {
+  font-family:var(--mono); font-size:20px; font-weight:500;
+  letter-spacing:-1px;
+}
+.ec-score.high { color:var(--green); }
+.ec-score.mid  { color:var(--amber); }
+
+/* Brief ID + CTA */
+.brief-result { text-align:center; opacity:0; transition:opacity .5s ease; }
+.brief-result.visible { opacity:1; }
 .briefid {
-  font-family:var(--font-mono);font-size:13px;color:var(--blue);
-  background:var(--blue-dim);border:1px solid var(--blue-border);
-  padding:8px 20px;border-radius:100px;display:inline-block;margin-bottom:32px;
+  font-family:var(--mono); font-size:13px; color:var(--amber);
+  background:var(--amber-dim); border:1px solid var(--amber-bdr);
+  padding:8px 22px; border-radius:100px; display:inline-block; margin-bottom:24px;
+}
+.success-title {
+  font-family:var(--serif); font-size:28px; font-style:italic;
+  color:var(--white); margin-bottom:8px;
+}
+.success-sub {
+  color:var(--muted2); font-size:14px; line-height:1.6; max-width:340px;
+  margin:0 auto 24px; font-weight:300;
 }
 
-/* SIDE PANEL (right col) */
-.side { grid-column:3;padding:120px 48px 48px 48px;position:sticky;top:0;align-self:start; }
+/* HINT TEXT */
+.hint-text { text-align:center; font-size:12px; color:var(--muted); font-family:var(--mono); letter-spacing:.5px; margin-top:-8px; }
+
+/* SIDE PANEL */
+.side { grid-column:3; padding:116px 40px 48px 40px; position:sticky; top:0; align-self:start; }
 .side-card {
-  border:1px solid var(--border);border-radius:16px;background:var(--surface);
-  padding:24px;margin-bottom:16px;
+  border:1px solid var(--border); border-radius:14px; background:var(--surface);
+  padding:22px; margin-bottom:14px;
 }
-.side-title { font-size:12px;color:var(--muted);font-family:var(--font-mono);letter-spacing:1px;text-transform:uppercase;margin-bottom:16px; }
-.side-item { display:flex;align-items:flex-start;gap:12px;margin-bottom:14px; }
+.side-title {
+  font-size:11px; color:var(--muted); font-family:var(--mono);
+  letter-spacing:1.5px; text-transform:uppercase; margin-bottom:16px;
+}
+.side-item { display:flex; align-items:flex-start; gap:12px; margin-bottom:14px; }
 .side-item:last-child { margin-bottom:0; }
-.side-dot { width:6px;height:6px;border-radius:50%;background:var(--blue);flex-shrink:0;margin-top:5px;opacity:.7; }
-.side-text { font-size:13px;color:var(--muted2);line-height:1.5;font-weight:300; }
-.side-text strong { color:var(--text);font-weight:500; }
+.side-dot { width:5px; height:5px; border-radius:50%; background:var(--amber); flex-shrink:0; margin-top:6px; opacity:.6; }
+.side-text { font-size:13px; color:var(--muted2); line-height:1.55; font-weight:300; }
+.side-text strong { color:var(--white); font-weight:500; }
 
-.expert-preview { display:flex;flex-direction:column;gap:8px; }
-.ep-row { display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:8px;background:var(--surface2); }
-.ep-av { width:28px;height:28px;border-radius:7px;display:grid;place-items:center;font-size:10px;font-weight:600;font-family:var(--font-mono);flex-shrink:0; }
-.ep-av-b { background:rgba(59,130,246,.15);color:var(--blue);border:1px solid var(--blue-border); }
-.ep-av-g { background:rgba(34,197,94,.1);color:#22c55e;border:1px solid rgba(34,197,94,.2); }
-.ep-av-a { background:rgba(245,158,11,.1);color:#f59e0b;border:1px solid rgba(245,158,11,.2); }
-.ep-info { flex:1;min-width:0; }
-.ep-name { font-size:12px;font-weight:500; }
-.ep-role { font-size:11px;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis; }
-.ep-score { font-family:var(--font-mono);font-size:11px;color:var(--blue); }
+.expert-preview { display:flex; flex-direction:column; gap:7px; }
+.ep-row { display:flex; align-items:center; gap:10px; padding:10px 12px; border-radius:8px; background:var(--surface2); }
+.ep-av { width:28px; height:28px; border-radius:7px; display:grid; place-items:center; font-size:10px; font-weight:600; font-family:var(--mono); flex-shrink:0; }
+.ep-av-a { background:rgba(232,160,32,.12); color:var(--amber); border:1px solid var(--amber-bdr); }
+.ep-av-g { background:rgba(74,222,128,.1); color:var(--green); border:1px solid rgba(74,222,128,.2); }
+.ep-av-t { background:rgba(45,212,191,.1); color:var(--teal); border:1px solid rgba(45,212,191,.2); }
+.ep-info { flex:1; min-width:0; }
+.ep-name { font-size:12px; font-weight:500; color:var(--white); }
+.ep-role { font-size:11px; color:var(--muted); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+.ep-score { font-family:var(--mono); font-size:12px; color:var(--amber); }
 
-/* FLOATING INDICATOR (top right corner floating chips like VeriPulse) */
-.vp-chip {
-  position:fixed;border:1px solid var(--border);border-radius:8px;
-  padding:8px 14px;background:rgba(9,9,11,.9);backdrop-filter:blur(12px);
-  font-size:12px;color:var(--muted2);display:flex;align-items:center;gap:6px;
-  pointer-events:none;z-index:10;
-  animation:chipFloat 5s ease-in-out infinite alternate;
-}
-.vp-chip .chip-dot { width:5px;height:5px;border-radius:50%; }
-.chip-1 { top:160px;left:40px;animation-delay:0s; }
-.chip-2 { top:220px;right:60px;animation-delay:-1.5s; }
-.chip-3 { bottom:200px;left:60px;animation-delay:-3s; }
-.chip-4 { bottom:160px;right:40px;animation-delay:-4s; }
-@keyframes chipFloat { from{transform:translateY(0)} to{transform:translateY(-8px)} }
-
+/* MOBILE */
 @media (hover: none) {
   body { cursor: auto; }
   .cur, .cur-r { display: none; }
 }
 
-@media(max-width:900px) {
-  .wrapper {
-    grid-template-columns: 1fr;
-    grid-template-rows: auto auto 1fr;
-  }
+@media (max-width: 960px) {
+  .wrapper { grid-template-columns: 1fr; grid-template-rows: auto auto 1fr; }
   .side { display: none; }
-
-  nav {
-    grid-column: 1; padding: 14px 20px;
-    display: flex; align-items: center; justify-content: space-between;
-  }
-  .nav-logo { font-size: 16px; }
+  nav { grid-column: 1; padding: 14px 20px; }
+  .nav-logo { font-size: 17px; }
   .secure { display: none; }
   .nav-back { font-size: 12px; padding: 6px 12px; }
-
-  .step-bar {
-    grid-column: 1; padding: 20px 20px 0;
-  }
+  .step-bar { grid-column: 1; padding: 18px 20px 0; }
   .step-bar::before { display: none; }
-  /* Show compact dots only */
   .step-dot-wrap { width: auto; min-width: 32px; }
   .step-label { display: none; }
   .step-connector { width: 20px; margin: 0 -10px; flex-shrink: 0; }
-
-  main {
-    grid-column: 1;
-    padding: 24px 20px 100px;
-    max-width: 100%;
-  }
-
-  /* Options */
+  main { grid-column: 1; padding: 24px 20px 100px; max-width: 100%; }
   .option-grid { grid-template-columns: 1fr 1fr; gap: 8px; }
   .option-grid.cols-3 { grid-template-columns: 1fr 1fr 1fr; }
   .opt { padding: 14px 12px; gap: 6px; }
-  .opt-desc { display: none; } /* hide desc on mobile to save space */
-  .opt-icon { font-size: 22px; }
-  .opt-label { font-size: 13px; }
-
-  .field-row { grid-template-columns: 1fr; gap: 16px; }
+  .opt-desc { display: none; }
+  .field-row { grid-template-columns: 1fr; gap: 14px; }
   .urgence-grid { grid-template-columns: repeat(3,1fr); gap: 8px; }
   .urg-opt { padding: 12px 8px; }
   .urg-opt .urg-sub { display: none; }
-
-  .step-title { font-size: 26px; letter-spacing: -.5px; }
-  .step-num { font-size: 10px; }
-
-  /* Buttons — primary on top, secondary below */
+  .step-title { font-size: 28px; }
   .btn-group { flex-direction: column; gap: 10px; }
-  .btn-primary { width: 100%; padding: 16px; font-size: 15px; }
+  .btn-primary { width: 100%; padding: 16px; }
   .btn-secondary { width: 100%; padding: 14px; text-align: center; }
-
-  /* Slider */
   input[type=range] { height: 4px; }
   input[type=range]::-webkit-slider-thumb { width: 26px; height: 26px; }
-  input[type=range]::-moz-range-thumb { width: 26px; height: 26px; }
-  .slider-labels span { font-size: 9px; }
-
   .trust-strip { flex-wrap: wrap; gap: 10px; }
-  .trust-item { font-size: 11px; }
-
-  /* Summary */
-  .summary-card { font-size: 13px; }
-  .price-big { font-size: 32px; }
-
   .vp-chip { display: none; }
-  .floating-tags { display: none; }
-
-  /* Progress bar */
-  #progressFill { transition: width .5s cubic-bezier(.4,0,.2,1); }
 }
 
-@media(max-width:480px) {
-  main { padding: 20px 16px 100px; }
+@media (max-width: 480px) {
+  main { padding: 18px 16px 100px; }
   nav { padding: 12px 16px; }
-
-  .option-grid { grid-template-columns: 1fr 1fr; }
-  .option-grid.cols-3 { grid-template-columns: 1fr 1fr; }
-  .urgence-grid { grid-template-columns: 1fr 1fr 1fr; }
-
-  .step-title { font-size: 22px; }
-  .budget-display { font-size: 22px; }
-  .step-connector { width: 14px; margin: 0 -7px; }
-
+  .step-title { font-size: 24px; }
+  .budget-display { font-size: 24px; }
   .opt-icon { font-size: 18px; }
   .opt-label { font-size: 12px; }
+  .option-grid.cols-3 { grid-template-columns: 1fr 1fr; }
+  .step-connector { width: 14px; margin: 0 -7px; }
 }
 </style>
 </head>
 <body>
 
+<div class="bg-light"></div>
+<div class="bg-grid"></div>
 <div class="cur" id="cur"></div>
 <div class="cur-r" id="curR"></div>
 
-<!-- VeriPulse-style floating chips -->
-<div class="vp-chip chip-1"><span class="chip-dot" style="background:#22c55e"></span>500+ experts vérifiés</div>
-<div class="vp-chip chip-2"><span class="chip-dot" style="background:var(--blue)"></span>Matching IA</div>
-<div class="vp-chip chip-3"><span class="chip-dot" style="background:#f59e0b"></span>Réponse < 48h</div>
-<div class="vp-chip chip-4"><span class="chip-dot" style="background:#a78bfa"></span>Satisfait ou remboursé</div>
+<!-- Floating chips -->
+<div class="vp-chip chip-1"><span class="chip-dot" style="background:var(--green)"></span>500+ experts vérifiés</div>
+<div class="vp-chip chip-2"><span class="chip-dot" style="background:var(--amber)"></span>Matching IA</div>
+<div class="vp-chip chip-3"><span class="chip-dot" style="background:var(--teal)"></span>Réponse &lt; 48h</div>
+<div class="vp-chip chip-4"><span class="chip-dot" style="background:var(--amber)"></span>Satisfait ou remboursé</div>
 
 <div class="wrapper">
 
 <!-- NAV -->
 <nav>
-  <a href="index.html" class="nav-logo">EnergyMatch <span>/ Brief</span></a>
-  <div class="secure">🔒 &nbsp;Paiement sécurisé SSL</div>
+  <a href="index.html" class="nav-logo"><em>Energy</em>Match <span>/ Brief</span></a>
+  <div class="secure">Paiement sécurisé SSL</div>
   <a href="index.html" class="nav-back">← Retour</a>
 </nav>
 
@@ -456,56 +510,56 @@ input[type=range]::-webkit-slider-thumb:hover { transform:scale(1.2); }
 
 <!-- MAIN -->
 <main>
-  <div class="progress-line" style="margin-bottom:40px">
+  <div class="progress-line" style="margin-bottom:36px">
     <div class="progress-fill" id="progressFill" style="width:20%"></div>
   </div>
 
-  <!-- STEP 0 : TYPE EXPERT -->
+  <!-- STEP 0 : EXPERTISE -->
   <div class="form-step active" id="step-0">
-    <div class="step-heading">
+    <div>
       <div class="step-num">Étape 01 — Type d'expertise</div>
       <h1 class="step-title">De quel expert<br><em>avez-vous besoin ?</em></h1>
-      <p class="step-sub">Sélectionnez la catégorie qui correspond le mieux à votre projet.</p>
+      <p class="step-sub">Sélectionnez la catégorie qui correspond à votre projet.</p>
     </div>
 
     <div class="option-grid">
       <label class="opt" onclick="select(this,'type')">
-        <input type="radio" name="type" value="courtier_energie">
+        <input type="radio" name="type" value="Courtier énergie">
         <div class="opt-check">✓</div>
         <div class="opt-icon">⚡</div>
         <div class="opt-label">Courtier énergie</div>
         <div class="opt-desc">Négociation contrats gaz & élec</div>
       </label>
       <label class="opt" onclick="select(this,'type')">
-        <input type="radio" name="type" value="auditeur_energetique">
+        <input type="radio" name="type" value="Auditeur énergétique">
         <div class="opt-check">✓</div>
         <div class="opt-icon">🔍</div>
         <div class="opt-label">Auditeur</div>
         <div class="opt-desc">Diagnostic consommation</div>
       </label>
       <label class="opt" onclick="select(this,'type')">
-        <input type="radio" name="type" value="installateur_photovoltaique">
+        <input type="radio" name="type" value="Installateur PV">
         <div class="opt-check">✓</div>
         <div class="opt-icon">☀️</div>
         <div class="opt-label">Installateur PV</div>
         <div class="opt-desc">Solaire & autoconsommation</div>
       </label>
       <label class="opt" onclick="select(this,'type')">
-        <input type="radio" name="type" value="consultant_cee">
+        <input type="radio" name="type" value="Consultant CEE">
         <div class="opt-check">✓</div>
         <div class="opt-icon">📄</div>
         <div class="opt-label">Consultant CEE</div>
         <div class="opt-desc">Certificats d'économies</div>
       </label>
       <label class="opt" onclick="select(this,'type')">
-        <input type="radio" name="type" value="bureau_etudes_thermique">
+        <input type="radio" name="type" value="Bureau d'études">
         <div class="opt-check">✓</div>
         <div class="opt-icon">🏗️</div>
         <div class="opt-label">Bureau d'études</div>
         <div class="opt-desc">Thermique RT2012 / RE2020</div>
       </label>
       <label class="opt" onclick="select(this,'type')">
-        <input type="radio" name="type" value="autre">
+        <input type="radio" name="type" value="Autre expertise">
         <div class="opt-check">✓</div>
         <div class="opt-icon">🔧</div>
         <div class="opt-label">Autre</div>
@@ -513,9 +567,7 @@ input[type=range]::-webkit-slider-thumb:hover { transform:scale(1.2); }
       </label>
     </div>
 
-    <div style="text-align:center;font-size:12px;color:var(--muted);font-family:var(--font-mono);letter-spacing:.5px;margin-top:-8px">
-      ↑ Sélectionnez une option pour continuer
-    </div>
+    <div class="hint-text">↑ Sélectionnez une option pour continuer</div>
 
     <div class="trust-strip">
       <div class="trust-item"><span class="trust-icon">✓</span> Gratuit, sans engagement</div>
@@ -526,7 +578,7 @@ input[type=range]::-webkit-slider-thumb:hover { transform:scale(1.2); }
 
   <!-- STEP 1 : PÉRIMÈTRE -->
   <div class="form-step" id="step-1">
-    <div class="step-heading">
+    <div>
       <div class="step-num">Étape 02 — Périmètre du projet</div>
       <h1 class="step-title">Décrivez<br><em>votre besoin</em></h1>
     </div>
@@ -540,17 +592,17 @@ input[type=range]::-webkit-slider-thumb:hover { transform:scale(1.2); }
       <div class="label">Périmètre du projet</div>
       <div class="option-grid cols-3">
         <label class="opt" onclick="select(this,'perimetre')">
-          <input type="radio" name="perimetre" value="site_unique">
+          <input type="radio" name="perimetre" value="Site unique">
           <div class="opt-check">✓</div>
           <div class="opt-label" style="font-size:13px">Site unique</div>
         </label>
         <label class="opt" onclick="select(this,'perimetre')">
-          <input type="radio" name="perimetre" value="multi_sites_2_10">
+          <input type="radio" name="perimetre" value="2–10 sites">
           <div class="opt-check">✓</div>
           <div class="opt-label" style="font-size:13px">2–10 sites</div>
         </label>
         <label class="opt" onclick="select(this,'perimetre')">
-          <input type="radio" name="perimetre" value="multi_sites_10+">
+          <input type="radio" name="perimetre" value="10+ sites">
           <div class="opt-check">✓</div>
           <div class="opt-label" style="font-size:13px">10+ sites</div>
         </label>
@@ -570,23 +622,19 @@ input[type=range]::-webkit-slider-thumb:hover { transform:scale(1.2); }
 
   <!-- STEP 2 : BUDGET & URGENCE -->
   <div class="form-step" id="step-2">
-    <div class="step-heading">
+    <div>
       <div class="step-num">Étape 03 — Budget & urgence</div>
       <h1 class="step-title">Cadre<br><em>financier & temporel</em></h1>
     </div>
 
     <div class="field">
       <div class="label">Budget estimé (€/an ou mission)</div>
-      <div class="slider-wrap">
-        <div class="budget-display" id="budgetDisplay">Sur devis <span>— pas de contrainte fixe</span></div>
+      <div style="margin-top:4px">
+        <div class="budget-display" id="budgetDisplay">Sur devis <span>— sans contrainte fixe</span></div>
         <input type="range" id="budgetSlider" min="0" max="5" value="0" step="1">
         <div class="slider-labels">
-          <span>Sur devis</span>
-          <span>< 5k</span>
-          <span>5–20k</span>
-          <span>20–50k</span>
-          <span>50–100k</span>
-          <span>> 100k</span>
+          <span>Sur devis</span><span>&lt; 5k</span><span>5–20k</span>
+          <span>20–50k</span><span>50–100k</span><span>&gt; 100k</span>
         </div>
       </div>
     </div>
@@ -594,17 +642,17 @@ input[type=range]::-webkit-slider-thumb:hover { transform:scale(1.2); }
     <div class="field">
       <div class="label">Niveau d'urgence</div>
       <div class="urgence-grid">
-        <div class="urg-opt" onclick="selectUrg(this,'immediatement')">
+        <div class="urg-opt" onclick="selectUrg(this,'Immédiatement')">
           <div class="urg-icon">🔴</div>
           <div class="urg-label">Immédiatement</div>
           <div class="urg-sub">Cette semaine</div>
         </div>
-        <div class="urg-opt" onclick="selectUrg(this,'1_mois')">
+        <div class="urg-opt" onclick="selectUrg(this,'Sous 1 mois')">
           <div class="urg-icon">🟡</div>
           <div class="urg-label">Sous 1 mois</div>
           <div class="urg-sub">Pas urgent</div>
         </div>
-        <div class="urg-opt" onclick="selectUrg(this,'flexible')">
+        <div class="urg-opt" onclick="selectUrg(this,'Flexible')">
           <div class="urg-icon">🟢</div>
           <div class="urg-label">Flexible</div>
           <div class="urg-sub">Pas de deadline</div>
@@ -620,7 +668,7 @@ input[type=range]::-webkit-slider-thumb:hover { transform:scale(1.2); }
 
   <!-- STEP 3 : CONTACT -->
   <div class="form-step" id="step-3">
-    <div class="step-heading">
+    <div>
       <div class="step-num">Étape 04 — Vos coordonnées</div>
       <h1 class="step-title">Où envoyer<br><em>les profils ?</em></h1>
       <p class="step-sub">Vos coordonnées restent confidentielles et ne sont jamais partagées.</p>
@@ -651,13 +699,13 @@ input[type=range]::-webkit-slider-thumb:hover { transform:scale(1.2); }
       <div class="label">Offre choisie</div>
       <div class="option-grid">
         <label class="opt" onclick="select(this,'plan')">
-          <input type="radio" name="plan" value="essentiel">
+          <input type="radio" name="plan" value="Essentiel">
           <div class="opt-check">✓</div>
           <div class="opt-label">Essentiel — 49€</div>
           <div class="opt-desc">3 profils · 48h · Satisfait ou remboursé</div>
         </label>
         <label class="opt" onclick="select(this,'plan')">
-          <input type="radio" name="plan" value="premium">
+          <input type="radio" name="plan" value="Premium">
           <div class="opt-check">✓</div>
           <div class="opt-label">Premium — 99€</div>
           <div class="opt-desc">5 profils · Priorité 24h · Suivi personnalisé</div>
@@ -667,63 +715,63 @@ input[type=range]::-webkit-slider-thumb:hover { transform:scale(1.2); }
 
     <div class="btn-group">
       <button class="btn-secondary" onclick="prevStep()">← Retour</button>
-      <button class="btn-primary" onclick="nextStep()">Voir le résumé →</button>
+      <button class="btn-primary" onclick="showSummary()">Voir le résumé →</button>
     </div>
   </div>
 
   <!-- STEP 4 : RÉSUMÉ -->
   <div class="form-step" id="step-4">
-    <div class="step-heading">
+    <div>
       <div class="step-num">Étape 05 — Récapitulatif</div>
       <h1 class="step-title">Vérifiez<br><em>avant d'envoyer</em></h1>
     </div>
 
-    <div class="summary-card">
+    <div class="summary-card" id="summaryCard">
       <div class="summary-section">
         <div class="sum-label">Votre besoin</div>
-        <div class="sum-row">
+        <div class="sum-row" style="animation-delay:.08s">
           <span class="sum-key">Type d'expertise</span>
-          <span class="sum-val blue" id="sum-type">—</span>
+          <span class="sum-val amber" id="sum-type">—</span>
         </div>
-        <div class="sum-row">
+        <div class="sum-row" style="animation-delay:.16s">
           <span class="sum-key">Zone</span>
           <span class="sum-val" id="sum-zone">—</span>
         </div>
-        <div class="sum-row">
+        <div class="sum-row" style="animation-delay:.24s">
           <span class="sum-key">Périmètre</span>
           <span class="sum-val" id="sum-perimetre">—</span>
         </div>
-        <div class="sum-row">
+        <div class="sum-row" style="animation-delay:.32s">
           <span class="sum-key">Budget</span>
           <span class="sum-val" id="sum-budget">—</span>
         </div>
-        <div class="sum-row">
+        <div class="sum-row" style="animation-delay:.40s">
           <span class="sum-key">Urgence</span>
           <span class="sum-val" id="sum-urgence">—</span>
         </div>
       </div>
       <div class="summary-section">
         <div class="sum-label">Contact</div>
-        <div class="sum-row">
+        <div class="sum-row" style="animation-delay:.50s">
           <span class="sum-key">Nom</span>
           <span class="sum-val" id="sum-nom">—</span>
         </div>
-        <div class="sum-row">
+        <div class="sum-row" style="animation-delay:.58s">
           <span class="sum-key">Email</span>
           <span class="sum-val" id="sum-email">—</span>
         </div>
-        <div class="sum-row">
+        <div class="sum-row" style="animation-delay:.66s">
           <span class="sum-key">Entreprise</span>
           <span class="sum-val" id="sum-entreprise">—</span>
         </div>
       </div>
       <div class="summary-section">
         <div class="sum-label">Offre & montant</div>
-        <div class="sum-row">
+        <div class="sum-row" style="animation-delay:.76s">
           <span class="sum-key">Plan</span>
-          <span class="sum-val blue" id="sum-plan">—</span>
+          <span class="sum-val amber" id="sum-plan">—</span>
         </div>
-        <div style="margin-top:16px">
+        <div style="margin-top:16px;animation:revealRow .4s .86s ease forwards;opacity:0">
           <div class="price-display">
             <span class="price-currency">€</span>
             <span class="price-big" id="sum-price">49</span>
@@ -747,11 +795,55 @@ input[type=range]::-webkit-slider-thumb:hover { transform:scale(1.2); }
   <!-- SUCCESS -->
   <div class="form-step" id="step-success">
     <div class="success-wrap">
-      <div class="success-icon">✓</div>
-      <h2 class="success-title">Brief reçu !</h2>
-      <p class="success-sub">Notre IA analyse votre brief. Vous recevrez les 3 profils sélectionnés dans votre boîte mail d'ici 48 heures.</p>
-      <div class="briefid"># BRIEF-2025-<span id="briefNum">2847</span></div>
-      <button class="btn-primary" onclick="location.href='dashboard.html'" style="max-width:280px;margin:0 auto;display:block">Voir le tableau de bord →</button>
+
+      <!-- Phase 1 : scan -->
+      <div class="scan-phase" id="scanPhase">
+        <div class="scan-icon"><span class="scan-emoji">⚡</span></div>
+        <div class="scan-title">Analyse IA en cours…</div>
+        <div class="scan-status" id="scanStatus">Lecture du brief…</div>
+        <div class="scan-bar-wrap"><div class="scan-bar-fill" id="scanFill"></div></div>
+      </div>
+
+      <!-- Phase 2 : résultats -->
+      <div class="result-phase" id="resultPhase">
+        <div class="match-found-label">✦ 3 experts sélectionnés</div>
+        <div class="expert-cards">
+          <div class="expert-card" id="ec-1">
+            <div class="ec-rank">RANG #1</div>
+            <div class="ec-av ep-av-a">AM</div>
+            <div class="ec-info">
+              <div class="ec-name">Alexandre Morin</div>
+              <div class="ec-role" id="ec-role-1">Courtier énergie · Île-de-France</div>
+            </div>
+            <div class="ec-score high">96</div>
+          </div>
+          <div class="expert-card" id="ec-2">
+            <div class="ec-rank">RANG #2</div>
+            <div class="ec-av ep-av-g">MD</div>
+            <div class="ec-info">
+              <div class="ec-name">Marine Dupont</div>
+              <div class="ec-role" id="ec-role-2">Consultant CEE · France entière</div>
+            </div>
+            <div class="ec-score mid">91</div>
+          </div>
+          <div class="expert-card" id="ec-3">
+            <div class="ec-rank">RANG #3</div>
+            <div class="ec-av ep-av-t">CF</div>
+            <div class="ec-info">
+              <div class="ec-name">Claire Fontaine</div>
+              <div class="ec-role" id="ec-role-3">Bureau d'études · Bretagne</div>
+            </div>
+            <div class="ec-score mid">87</div>
+          </div>
+        </div>
+
+        <div class="brief-result" id="briefResult">
+          <div class="briefid"># BRIEF-2025-<span id="briefNum">2847</span></div>
+          <p class="success-sub">Vous recevrez les profils sélectionnés dans votre boîte mail d'ici <strong style="color:var(--white)">48 heures</strong>.</p>
+          <button class="btn-primary" onclick="location.href='dashboard.html'" style="max-width:280px;margin:0 auto;display:block">Voir le tableau de bord →</button>
+        </div>
+      </div>
+
     </div>
   </div>
 
@@ -779,27 +871,18 @@ input[type=range]::-webkit-slider-thumb:hover { transform:scale(1.2); }
     <div class="side-title">Experts récemment matchés</div>
     <div class="expert-preview">
       <div class="ep-row">
-        <div class="ep-av ep-av-b">AM</div>
-        <div class="ep-info">
-          <div class="ep-name">Alexandre Morin</div>
-          <div class="ep-role">Courtier énergie · IDF</div>
-        </div>
+        <div class="ep-av ep-av-a">AM</div>
+        <div class="ep-info"><div class="ep-name">Alexandre Morin</div><div class="ep-role">Courtier énergie · IDF</div></div>
         <div class="ep-score">96</div>
       </div>
       <div class="ep-row">
         <div class="ep-av ep-av-g">MD</div>
-        <div class="ep-info">
-          <div class="ep-name">Marine Dupont</div>
-          <div class="ep-role">Consultant CEE</div>
-        </div>
+        <div class="ep-info"><div class="ep-name">Marine Dupont</div><div class="ep-role">Consultant CEE</div></div>
         <div class="ep-score">91</div>
       </div>
       <div class="ep-row">
-        <div class="ep-av ep-av-a">CF</div>
-        <div class="ep-info">
-          <div class="ep-name">Claire Fontaine</div>
-          <div class="ep-role">Bureau d'études</div>
-        </div>
+        <div class="ep-av ep-av-t">CF</div>
+        <div class="ep-info"><div class="ep-name">Claire Fontaine</div><div class="ep-role">Bureau d'études</div></div>
         <div class="ep-score">87</div>
       </div>
     </div>
@@ -810,10 +893,10 @@ input[type=range]::-webkit-slider-thumb:hover { transform:scale(1.2); }
   </div>
 </aside>
 
-</div><!-- /wrapper -->
+</div>
 
 <script>
-// CURSOR (desktop only)
+// CURSOR
 const cur=document.getElementById('cur'),curR=document.getElementById('curR');
 let mx=0,my=0,rx=0,ry=0;
 if (!window.matchMedia('(hover: none)').matches) {
@@ -825,49 +908,34 @@ if (!window.matchMedia('(hover: none)').matches) {
 let currentStep = 0;
 const totalSteps = 5;
 const budgetLabels    = ['Sur devis','Moins de 5 000 €','5 000 – 20 000 €','20 000 – 50 000 €','50 000 – 100 000 €','Plus de 100 000 €'];
-const budgetSubLabels = ['— pas de contrainte fixe','/ an ou par mission','/ an ou par mission','/ an ou par mission','/ an ou par mission','/ an ou par mission'];
+const budgetSubLabels = ['— sans contrainte fixe','/ an ou par mission','/ an ou par mission','/ an ou par mission','/ an ou par mission','/ an ou par mission'];
 
 function scrollTop() {
-  const main = document.querySelector('main');
-  if (main) main.scrollIntoView({ behavior: 'smooth', block: 'start' });
   window.scrollTo({ top: 0, behavior: 'smooth' });
 }
 
 function goTo(n, direction) {
   const prev = document.getElementById('step-' + currentStep);
   const dir  = direction !== undefined ? direction : (n > currentStep ? 1 : -1);
-
   if (prev) {
-    prev.classList.remove('active', 'slide-in', 'slide-in-back');
-    prev.classList.add('active'); // keep visible during exit
-    // Brief exit flash then hide
-    requestAnimationFrame(() => {
-      prev.classList.remove('active');
-    });
+    prev.classList.remove('active','slide-in','slide-in-back');
+    requestAnimationFrame(() => prev.classList.remove('active'));
   }
   document.getElementById('step-success').classList.remove('active');
-
   currentStep = n;
   const next = document.getElementById('step-' + n);
   if (next) {
-    next.classList.remove('slide-in', 'slide-in-back');
+    next.classList.remove('slide-in','slide-in-back');
     next.classList.add('active');
-    // Force reflow then add animation class
     void next.offsetWidth;
     next.classList.add(dir >= 0 ? 'slide-in' : 'slide-in-back');
   }
-
   updateStepBar();
   scrollTop();
 }
 
-function nextStep() {
-  if (currentStep < totalSteps - 1) goTo(currentStep + 1, 1);
-  else showSuccess();
-}
-function prevStep() {
-  if (currentStep > 0) goTo(currentStep - 1, -1);
-}
+function nextStep() { if (currentStep < totalSteps - 1) goTo(currentStep + 1, 1); }
+function prevStep() { if (currentStep > 0) goTo(currentStep - 1, -1); }
 
 function updateStepBar() {
   for (let i = 0; i < totalSteps; i++) {
@@ -875,26 +943,23 @@ function updateStepBar() {
     const lbl  = document.getElementById('lbl-' + i);
     const conn = document.getElementById('conn-' + i);
     if (!dot) continue;
-    dot.classList.remove('active', 'done');
+    dot.classList.remove('active','done');
     if (lbl) lbl.classList.remove('active');
     if (i < currentStep)       { dot.classList.add('done'); dot.textContent = '✓'; }
-    else if (i === currentStep) { dot.classList.add('active'); dot.textContent = '0' + (i + 1); if (lbl) lbl.classList.add('active'); }
-    else                        { dot.textContent = '0' + (i + 1); }
-    if (conn) { conn.classList.toggle('done', i < currentStep); }
+    else if (i === currentStep){ dot.classList.add('active'); dot.textContent='0'+(i+1); if(lbl)lbl.classList.add('active'); }
+    else                       { dot.textContent = '0' + (i+1); }
+    if (conn) conn.classList.toggle('done', i < currentStep);
   }
-  document.getElementById('progressFill').style.width = ((currentStep + 1) / totalSteps * 100) + '%';
+  document.getElementById('progressFill').style.width = ((currentStep+1)/totalSteps*100) + '%';
 }
 
-// ── SELECTION HELPERS ──
+// ── SELECTION ──
 function select(el, name) {
-  document.querySelectorAll('[name=' + name + ']').forEach(i => i.closest('.opt').classList.remove('selected'));
+  document.querySelectorAll('[name='+name+']').forEach(i => i.closest('.opt').classList.remove('selected'));
   el.classList.add('selected');
-
-  // Step 0: auto-advance after visual feedback
   if (name === 'type') {
-    el.style.transition = 'border-color .15s, background .15s, transform .15s';
     el.style.transform = 'scale(0.97)';
-    setTimeout(() => { el.style.transform = ''; }, 150);
+    setTimeout(() => { el.style.transform=''; }, 150);
     setTimeout(() => nextStep(), 420);
   }
 }
@@ -903,61 +968,64 @@ function selectUrg(el, val) {
   document.querySelectorAll('.urg-opt').forEach(u => u.classList.remove('selected'));
   el.classList.add('selected');
   el.dataset.val = val;
-
-  // Auto-advance after urgence selection
   setTimeout(() => nextStep(), 420);
 }
 
 // ── BUDGET SLIDER ──
 const slider  = document.getElementById('budgetSlider');
 const display = document.getElementById('budgetDisplay');
-if (slider) slider.addEventListener('input', () => {
-  const v = parseInt(slider.value);
-  display.innerHTML = budgetLabels[v] + '<span>' + budgetSubLabels[v] + '</span>';
-  // Animate thumb
-  slider.style.setProperty('--val', v);
-});
+if (slider) {
+  function updateSlider() {
+    const v = parseInt(slider.value);
+    const pct = (v / 5 * 100) + '%';
+    slider.style.setProperty('--pct', pct);
+    display.innerHTML = budgetLabels[v] + '<span>' + budgetSubLabels[v] + '</span>';
+  }
+  slider.addEventListener('input', updateSlider);
+  updateSlider();
+}
 
-// ── SUMMARY + SUBMIT ──
-function showSuccess() {
+// ── SUMMARY ──
+function showSummary() {
   const typeEl = document.querySelector('[name=type]:checked');
   const perEl  = document.querySelector('[name=perimetre]:checked');
   const planEl = document.querySelector('[name=plan]:checked');
   const urgEl  = document.querySelector('.urg-opt.selected');
-  const typeLabels = {
-    'courtier_energie': 'Courtier énergie',
-    'auditeur_energetique': 'Auditeur énergétique',
-    'installateur_photovoltaique': 'Installateur PV',
-    'consultant_cee': 'Consultant CEE',
-    'bureau_etudes_thermique': "Bureau d'études",
-    'autre': 'Autre expertise'
-  };
-  const perLabels = { 'site_unique': 'Site unique', 'multi_sites_2_10': '2–10 sites', 'multi_sites_10+': '10+ sites' };
 
-  document.getElementById('sum-type').textContent      = typeEl ? typeLabels[typeEl.value] || typeEl.value : 'Non précisé';
+  document.getElementById('sum-type').textContent      = typeEl ? typeEl.value : 'Non précisé';
   document.getElementById('sum-zone').textContent      = document.getElementById('zone').value || 'Non précisé';
-  document.getElementById('sum-perimetre').textContent = perEl  ? perLabels[perEl.value] || perEl.value   : 'Non précisé';
-  document.getElementById('sum-budget').textContent    = budgetLabels[parseInt(slider.value)];
+  document.getElementById('sum-perimetre').textContent = perEl  ? perEl.value  : 'Non précisé';
+  document.getElementById('sum-budget').textContent    = budgetLabels[parseInt(slider ? slider.value : 0)];
   document.getElementById('sum-urgence').textContent   = urgEl  ? urgEl.querySelector('.urg-label').textContent : 'Non précisé';
   document.getElementById('sum-nom').textContent       = document.getElementById('nom').value       || '—';
   document.getElementById('sum-email').textContent     = document.getElementById('email').value     || '—';
   document.getElementById('sum-entreprise').textContent = document.getElementById('entreprise').value || '—';
-  const isPremium = planEl && planEl.value === 'premium';
+
+  const isPremium = planEl && planEl.value === 'Premium';
   document.getElementById('sum-plan').textContent  = isPremium ? 'Premium' : 'Essentiel';
   document.getElementById('sum-price').textContent = isPremium ? '99' : '49';
+
+  // Reset animation on summary rows
+  document.querySelectorAll('#summaryCard .sum-row').forEach(r => {
+    r.style.animation = 'none';
+    void r.offsetWidth;
+    r.style.animation = '';
+  });
 
   goTo(4, 1);
 }
 
+// ── WOW SUBMIT: scan → expert reveal ──
 function submitBrief() {
+  // Hide step 4, show success
   const s4 = document.getElementById('step-4');
-  s4.classList.remove('active', 'slide-in', 'slide-in-back');
+  s4.classList.remove('active','slide-in','slide-in-back');
   const ss = document.getElementById('step-success');
   ss.classList.add('active');
   void ss.offsetWidth;
   ss.classList.add('slide-in');
 
-  document.getElementById('briefNum').textContent = Math.floor(2800 + Math.random() * 200);
+  // Mark all done
   document.getElementById('progressFill').style.width = '100%';
   for (let i = 0; i < totalSteps; i++) {
     const dot = document.getElementById('dot-' + i);
@@ -966,6 +1034,64 @@ function submitBrief() {
     if (conn) conn.classList.add('done');
   }
   scrollTop();
+  document.getElementById('briefNum').textContent = Math.floor(2800 + Math.random() * 200);
+
+  // Adapt expert roles to selected type
+  const typeEl = document.querySelector('[name=type]:checked');
+  const zone   = document.getElementById('zone').value || 'France';
+  const t = typeEl ? typeEl.value : 'Courtier énergie';
+  document.getElementById('ec-role-1').textContent = t + ' · ' + zone;
+  document.getElementById('ec-role-2').textContent = t + ' · France entière';
+  document.getElementById('ec-role-3').textContent = t + ' · Disponible 24h';
+
+  // ── Scanning animation ──
+  const fill = document.getElementById('scanFill');
+  const status = document.getElementById('scanStatus');
+  const scanPhase = document.getElementById('scanPhase');
+  const resultPhase = document.getElementById('resultPhase');
+
+  const steps = [
+    [0,   'Lecture du brief…'],
+    [20,  'Analyse des critères…'],
+    [45,  'Recherche dans la base (512 experts)…'],
+    [70,  'Scoring IA en cours…'],
+    [88,  'Sélection des meilleurs profils…'],
+    [100, 'Matching terminé ✓']
+  ];
+  let si = 0;
+  function nextScan() {
+    if (si >= steps.length) {
+      // Transition to results
+      setTimeout(() => {
+        scanPhase.style.opacity = '0';
+        scanPhase.style.transition = 'opacity .4s';
+        setTimeout(() => {
+          scanPhase.style.display = 'none';
+          resultPhase.style.display = 'block';
+          resultPhase.style.opacity = '0';
+          resultPhase.style.transition = 'opacity .4s';
+          void resultPhase.offsetWidth;
+          resultPhase.style.opacity = '1';
+          // Reveal experts one by one
+          ['ec-1','ec-2','ec-3'].forEach((id, i) => {
+            setTimeout(() => {
+              document.getElementById(id).classList.add('visible');
+            }, 200 + i * 380);
+          });
+          // Reveal brief result
+          setTimeout(() => {
+            document.getElementById('briefResult').classList.add('visible');
+          }, 200 + 3 * 380 + 300);
+        }, 400);
+      }, 500);
+      return;
+    }
+    const [pct, msg] = steps[si++];
+    fill.style.width = pct + '%';
+    status.textContent = msg;
+    setTimeout(nextScan, si === steps.length ? 600 : 320 + Math.random() * 180);
+  }
+  setTimeout(nextScan, 200);
 }
 </script>
 </body>
