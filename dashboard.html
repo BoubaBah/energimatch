@@ -288,6 +288,34 @@ tr:hover .row-actions { opacity: 1; }
 .page-btn:hover { border-color: var(--border2); color: var(--white); }
 .page-btn.active { border-color: var(--amber-bdr); background: var(--amber-dim); color: var(--amber); }
 
+/* ── SPARKLINES IN STAT CARDS ── */
+.spark-svg { display: block; margin-top: 8px; opacity: .5; }
+.spark-svg path { stroke-dasharray: 200; stroke-dashoffset: 200; animation: drawSpark 1.6s .3s ease forwards; }
+@keyframes drawSpark { to { stroke-dashoffset: 0; } }
+
+/* ── TOAST NOTIFICATION ── */
+.toast {
+  position: fixed; bottom: 28px; right: 28px; z-index: 500;
+  display: flex; align-items: center; gap: 12px;
+  background: rgba(11,10,16,0.96); backdrop-filter: blur(20px);
+  border: 1px solid var(--amber-bdr); border-radius: 12px;
+  padding: 14px 18px; max-width: 320px;
+  transform: translateY(100px); opacity: 0;
+  transition: transform .45s cubic-bezier(.34,1.56,.64,1), opacity .35s ease;
+  cursor: pointer;
+}
+.toast.show { transform: translateY(0); opacity: 1; }
+.toast-icon {
+  width: 36px; height: 36px; border-radius: 9px; flex-shrink: 0;
+  background: var(--amber-dim); border: 1px solid var(--amber-bdr);
+  display: grid; place-items: center; font-size: 16px;
+}
+.toast-body { flex: 1; min-width: 0; }
+.toast-title { font-size: 13px; font-weight: 500; color: var(--white); margin-bottom: 2px; }
+.toast-sub { font-size: 11px; color: var(--muted2); font-family: var(--mono); }
+.toast-close { font-size: 14px; color: var(--muted); padding: 4px; flex-shrink: 0; }
+.toast-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--amber); flex-shrink: 0; animation: blink 1.2s infinite; }
+
 /* TABLE SCROLL */
 .table-scroll { overflow-x: auto; -webkit-overflow-scrolling: touch; border-radius: 8px; }
 
@@ -506,21 +534,33 @@ tr:hover .row-actions { opacity: 1; }
         <div class="sc-label">Briefs total</div>
         <div class="sc-val" data-target="247">0</div>
         <div class="sc-delta delta-up">↑ +12 ce mois</div>
+        <svg class="spark-svg" width="100%" height="28" viewBox="0 0 120 28" preserveAspectRatio="none" fill="none">
+          <path d="M0 22 L17 19 L34 20 L51 15 L68 16 L85 10 L102 11 L120 6" stroke="var(--amber)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
       </div>
       <div class="stat-card">
         <div class="sc-label">En analyse</div>
         <div class="sc-val" style="color:var(--amber)" data-target="3">0</div>
         <div class="sc-delta delta-neutral">Agent IA actif</div>
+        <svg class="spark-svg" width="100%" height="28" viewBox="0 0 120 28" preserveAspectRatio="none" fill="none">
+          <path d="M0 14 L20 18 L40 8 L60 20 L80 6 L100 16 L120 4" stroke="var(--amber)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
       </div>
       <div class="stat-card">
         <div class="sc-label">Taux succès</div>
         <div class="sc-val" style="color:var(--green)" data-target="94" data-suffix="%">0%</div>
         <div class="sc-delta delta-up">↑ +2% vs mois dernier</div>
+        <svg class="spark-svg" width="100%" height="28" viewBox="0 0 120 28" preserveAspectRatio="none" fill="none">
+          <path d="M0 20 L17 17 L34 18 L51 13 L68 12 L85 8 L102 6 L120 4" stroke="var(--green)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
       </div>
       <div class="stat-card">
         <div class="sc-label">Revenus (mois)</div>
         <div class="sc-val" data-target="4780" data-prefix="€" data-format="k">0</div>
         <div class="sc-delta delta-up">↑ +18% vs N-1</div>
+        <svg class="spark-svg" width="100%" height="28" viewBox="0 0 120 28" preserveAspectRatio="none" fill="none">
+          <path d="M0 24 L17 20 L34 21 L51 16 L68 14 L85 9 L102 10 L120 5" stroke="var(--amber)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
       </div>
     </div>
 
@@ -595,6 +635,17 @@ tr:hover .row-actions { opacity: 1; }
     </div>
 
   </div>
+</div>
+
+<!-- TOAST NOTIFICATION -->
+<div class="toast" id="toast" onclick="dismissToast()">
+  <div class="toast-dot"></div>
+  <div class="toast-icon">⚡</div>
+  <div class="toast-body">
+    <div class="toast-title">Nouveau brief reçu</div>
+    <div class="toast-sub">Sophie C. · Auditeur énergétique · PACA</div>
+  </div>
+  <div class="toast-close">✕</div>
 </div>
 
 <!-- DETAIL PANEL -->
@@ -816,6 +867,31 @@ barData.forEach((v,i)=>{
 });
 
 renderTable(briefs);
+
+// ── TOAST NOTIFICATION ──
+const toast = document.getElementById('toast');
+function dismissToast() {
+  toast.classList.remove('show');
+}
+// Show 3s after load, auto-dismiss after 6s
+setTimeout(() => {
+  toast.classList.add('show');
+  setTimeout(dismissToast, 6000);
+}, 3000);
+
+// ── DONUT ANIMATION ──
+const donutArcs = document.querySelectorAll('.charts-row circle[stroke-dasharray]');
+donutArcs.forEach(arc => {
+  const final = arc.getAttribute('stroke-dasharray');
+  const offset = arc.getAttribute('stroke-dashoffset') || '0';
+  arc.setAttribute('stroke-dasharray', '0 189');
+  arc.setAttribute('stroke-dashoffset', '0');
+  setTimeout(() => {
+    arc.style.transition = 'stroke-dasharray 1s cubic-bezier(.4,0,.2,1), stroke-dashoffset 1s cubic-bezier(.4,0,.2,1)';
+    arc.setAttribute('stroke-dasharray', final);
+    arc.setAttribute('stroke-dashoffset', offset);
+  }, 400);
+});
 </script>
 </body>
 </html>
